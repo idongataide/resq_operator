@@ -16,6 +16,10 @@ import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
 import AcceptBookingModal from "./AcceptBookingModal";
 
+interface UserProfileProps {
+  booking: any;
+}
+
 const UserProfile: React.FC<UserProfileProps> = ({ booking }) => {
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);

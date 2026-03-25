@@ -5,8 +5,12 @@ import {
   FiClock
 } from "react-icons/fi";
 
-const RouteDetails = () => {
+interface RouteDetailsProps {
+  booking: any;
+}
+const RouteDetails = ({ booking }: RouteDetailsProps) => {
 
+  console.log("Booking data in RouteDetails:", booking);
   const payload = {
     requestAccepted: "Today, 10:23 am",
     contact: "Today, 10:23 am",

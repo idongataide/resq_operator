@@ -22,7 +22,7 @@ import { deleteAmbulance } from "@/api/ambulancesApi";
 interface Ambulance {
   ambulance_id: string;
   plate_number: string;
-  colour: string;
+  color: string;
   model: string;
   ambulance_type: string;
   ambulance_lead: string;
@@ -42,8 +42,8 @@ const AmbulancesTable = () => {
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedAmbulance, setSelectedAmbulance] = useState<Ambulance | null>(null);
-  const [searchText, setSearchText] = useState("");
-  const [filterType, setFilterType] = useState<string>("");
+  const [searchText] = useState("");
+  const [filterType] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
   
   const { data: ambulances, isLoading, mutate } = useAmbulances();
@@ -180,7 +180,7 @@ const AmbulancesTable = () => {
       title: "Ambulance Lead",
       dataIndex: "ambulance_lead",
       key: "ambulance_lead",
-      render: (_, record) => record?.lead_data?.full_name || "N/A",
+      render: (_: any, record: Ambulance & { lead_data?: { full_name?: string } }) => record?.lead_data?.full_name || "N/A",
     },
     {
       title: "Type of Ambulance",
@@ -334,7 +334,7 @@ const AmbulancesTable = () => {
                   <div className="flex justify-between">
                     <p className="text-sm">Colour</p>
                     <p className="font-medium">
-                      {selectedAmbulance.colour}
+                      {selectedAmbulance.color}
                     </p>
                   </div>
                 </div>

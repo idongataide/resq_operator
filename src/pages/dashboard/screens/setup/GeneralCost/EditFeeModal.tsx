@@ -6,7 +6,7 @@ import { updateFee } from "@/api/settingsApi";
 import { useSWRConfig } from "swr";
 
 interface Fee {
-  fee_id: string;
+  service_id: string;
   name: string;
   amount: number;
   tag?: string;
@@ -40,6 +40,8 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { mutate: globalMutate } = useSWRConfig();
 
+  console.log("Editing fee:", fee);
+
   useEffect(() => {
     if (fee && open) {
       form.setFieldsValue({
@@ -50,7 +52,7 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
   }, [fee, open, form]);
 
   const handleSubmit = async (values: FormValues) => {
-    if (!fee?.fee_id) {
+    if (!fee?.service_id) {
       toast.error("Fee ID not found");
       return;
     }
@@ -59,7 +61,7 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
     const loadingToast = toast.loading('Updating cost point...');
 
     try {
-      const response = await updateFee(fee.fee_id, {
+      const response = await updateFee(fee.service_id, {
         name: values.name,
         amount: values.amount.toString(),
       });

@@ -6,6 +6,12 @@ import { deleteFee } from "@/api/settingsApi";
 import { useSWRConfig } from "swr";
 import Images from "@/components/images";
 
+
+interface Fee {
+  service_id: string;
+  // Add other properties if needed
+}
+
 interface DeleteFeeModalProps {
   open: boolean;
   onClose: () => void;
@@ -23,7 +29,7 @@ const DeleteFeeModal: React.FC<DeleteFeeModalProps> = ({
   const { mutate: globalMutate } = useSWRConfig();
 
   const handleDelete = async () => {
-    if (!fee?.fee_id) {
+    if (!fee?.service_id) {
       toast.error("Fee ID not found");
       return;
     }
@@ -32,7 +38,7 @@ const DeleteFeeModal: React.FC<DeleteFeeModalProps> = ({
     const loadingToast = toast.loading('Deleting cost point...');
 
     try {
-      const response = await deleteFee(fee.fee_id);
+      const response = await deleteFee(fee.service_id);
       
       // Check if response is an error
       if (response?.response?.data?.msg || response?.message) {

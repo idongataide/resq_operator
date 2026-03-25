@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Input, Button, Select, Form, Upload } from "antd";
+import { Modal, Input, Button, Select, Form } from "antd";
 import { FiX } from "react-icons/fi";
-import { UploadOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
 import { updateAmbulance } from "@/api/ambulancesApi";
@@ -19,9 +18,22 @@ interface UpdateAmbulanceModalProps {
 
 interface Lead {
   lead_id: string;
-  full_name: string;
-  email: string;
-  phone_number: string;
+  lead_data?: {
+    full_name: string;
+    email: string;
+    phone_number: string;
+  };
+  full_name?: string;
+  email?: string;
+  phone_number?: string;
+}
+
+interface AmbulanceFormData {
+  plate_number: string;
+  color: string;
+  model: string;
+  ambulance_type: string;
+  lead_id: string;
 }
 
 const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
@@ -33,7 +45,6 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
 }) => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [fileList, setFileList] = useState<any[]>([]);
   const { mutate: globalMutate } = useSWRConfig();
   
   // Fetch ambulance leads
@@ -56,15 +67,24 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
   useEffect(() => {
     if (!open) {
       form.resetFields();
-      setFileList([]);
     }
   }, [open, form]);
 
-  const handleUploadChange = ({ fileList }: any) => {
-    setFileList(fileList);
+  // Helper to get lead name
+  const getLeadName = (lead: Lead) => {
+    if (lead.lead_data?.full_name) return lead.lead_data.full_name;
+    if (lead.full_name) return lead.full_name;
+    return "Unknown";
   };
 
-  const handleSubmit = async (values: any) => {
+  // Helper to get lead phone
+  const getLeadPhone = (lead: Lead) => {
+    if (lead.lead_data?.phone_number) return lead.lead_data.phone_number;
+    if (lead.phone_number) return lead.phone_number;
+    return "";
+  };
+
+  const handleSubmit = async (values: AmbulanceFormData) => {
     if (!ambulance?.ambulance_id) {
       toast.error("Ambulance ID not found");
       return;
@@ -73,27 +93,23 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
     setIsSubmitting(true);
     const loadingToast = toast.loading("Updating ambulance...");
 
-    // Create FormData for file upload with correct field names
-    const formData = new FormData();
-    formData.append("plate_number", values.plate_number);
-    formData.append("color", values.color);
-    formData.append("model", values.model);
-    formData.append("ambulance_type", values.ambulance_type);
-    formData.append("lead_id", values.lead_id);
-    
-    if (fileList.length > 0) {
-      formData.append("document", fileList[0].originFileObj);
-    }
+    // Prepare JSON payload
+    const payload = {
+      plate_number: values.plate_number,
+      color: values.color,
+      model: values.model,
+      ambulance_type: values.ambulance_type,
+      lead_id: values.lead_id,
+    };
 
     try {
-      const response = await updateAmbulance(ambulance.ambulance_id, formData);
+      const response = await updateAmbulance(ambulance.ambulance_id, payload);
 
-      if (response.status === 'ok') {
+      if (response?.status === 'ok') {
         toast.success("Ambulance updated successfully!", { id: loadingToast });
         globalMutate("/accounts/ambulances");
 
         form.resetFields();
-        setFileList([]);
 
         onAmbulanceUpdated?.();
         onSubmit?.(response);
@@ -138,7 +154,11 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
           name="plate_number"
           rules={[{ required: true, message: "Plate number is required" }]}
         >
-          <Input size="large" placeholder="Enter plate number" />
+          <Input 
+            size="large" 
+            placeholder="Enter plate number" 
+            className="rounded-lg"
+          />
         </Form.Item>
 
         <div className="flex gap-4">
@@ -148,7 +168,11 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
               name="color"
               rules={[{ required: true, message: "Color is required" }]}
             >
-              <Input size="large" placeholder="Enter color" />
+              <Input 
+                size="large" 
+                placeholder="Enter color" 
+                className="rounded-lg"
+              />
             </Form.Item>
           </div>
 
@@ -158,7 +182,11 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
               name="model"
               rules={[{ required: true, message: "Model is required" }]}
             >
-              <Input size="large" placeholder="Enter model" />
+              <Input 
+                size="large" 
+                placeholder="Enter model" 
+                className="rounded-lg"
+              />
             </Form.Item>
           </div>
         </div>
@@ -168,7 +196,11 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
           name="ambulance_type"
           rules={[{ required: true, message: "Ambulance type is required" }]}
         >
-          <Select size="large" placeholder="Select ambulance type">
+          <Select 
+            size="large" 
+            placeholder="Select ambulance type"
+            className="rounded-lg"
+          >
             <Option value="van">Van</Option>
             <Option value="tricycle">Tricycle</Option>
             <Option value="car">Car</Option>
@@ -187,37 +219,20 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
             loading={leadsLoading}
             showSearch
             optionFilterProp="children"
-            filterOption={(input, option) => 
-              (option?.children as unknown as string)?.toLowerCase().includes(input.toLowerCase())
-            }
+            className="rounded-lg"
+            notFoundContent={leadsLoading ? "Loading..." : "No leads available"}
           >
             {leads?.map((lead: Lead) => (
               <Option key={lead.lead_id} value={lead.lead_id}>
-                {lead.full_name} - {lead.phone_number}
+                {getLeadName(lead)} {getLeadPhone(lead) && `- ${getLeadPhone(lead)}`}
               </Option>
             ))}
           </Select>
         </Form.Item>
 
-        <Form.Item
-          label="Upload Document"
-          name="document"
-        >
-          <Upload
-            beforeUpload={() => false}
-            fileList={fileList}
-            onChange={handleUploadChange}
-            maxCount={1}
-          >
-            <Button icon={<UploadOutlined />} className="w-full h-[45px]">
-              Replace document
-            </Button>
-          </Upload>
-        </Form.Item>
-
         <div className="flex justify-end gap-4 pt-4">
           <Button 
-            className="px-8! bg-[#F5EAEA]! h-[45px]! text-[#DB4A47]! font-medium! border-none!"
+            className="px-8! bg-[#F5EAEA]! h-[45px]! text-[#DB4A47]! font-medium! border-none! rounded-lg"
             onClick={onClose} 
             disabled={isSubmitting}
           >
@@ -227,7 +242,7 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
           <Button
             htmlType="submit"
             type="primary"
-            className="px-8! bg-[#DB4A47]! h-[45px]! hover:bg-[#c63d3a]! border-none!"
+            className="px-8! bg-[#DB4A47]! h-[45px]! hover:bg-[#c63d3a]! border-none! rounded-lg"
             loading={isSubmitting}
           >
             Update

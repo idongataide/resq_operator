@@ -49,7 +49,7 @@ const AmbulanceLeadsTable = () => {
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<AmbulanceLead | null>(null);
-  const [searchText, setSearchText] = useState("");
+  const [searchText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   
   const { data: leads, isLoading, mutate } = useAmbulanceLeads();

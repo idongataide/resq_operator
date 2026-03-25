@@ -5,7 +5,14 @@ import {
   FiClipboard
 } from "react-icons/fi";
 
-const CareDetails = () => {
+
+
+interface CareDetailsProps {
+  booking: any;
+}
+const CareDetails: React.FC<CareDetailsProps> = ({ booking }) => {
+  console.log("Booking data in CareDetails:", booking);
+  
   const careDetails = {
     preTreatment: {
       diagnosis: "The driver, Babatunde, was incredibly punctual and professional, navigating the busy Lagos streets with ease. His calm demeanor was reassuring during a stressful situation. I'd wholeheartedly recommend this ambulance service to anyone in need of prompt and reliable medical transport."

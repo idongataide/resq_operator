@@ -109,8 +109,8 @@ const StakeholderPayout = () => {
       title: "Date Joined",
       dataIndex: "dateJoined",
       key: "dateJoined",
-      sorter: (a, b) => a.dateJoined.localeCompare(b.dateJoined),
-      render: (text) => (
+      sorter: (a: { dateJoined: string }, b: { dateJoined: string }) => a.dateJoined.localeCompare(b.dateJoined),
+      render: (text: string) => (
         <div className="flex items-center gap-2">
           <FiClock className="text-gray-400" />
           <span>{text}</span>

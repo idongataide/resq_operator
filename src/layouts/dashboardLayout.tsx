@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { IoIosNotificationsOutline} from "react-icons/io";
-import { FaSun, FaMoon, FaChevronDown, FaLock, FaQuestionCircle, FaSignOutAlt } from "react-icons/fa";
+import { FaChevronDown, FaLock, FaQuestionCircle, FaSignOutAlt } from "react-icons/fa";
 import { useOnboardingStore } from "../global/store";
 import SiderScreen from "../pages/dashboard/common/sideBar";
 import Images from "@/components/images";
-import NotificationsSidebar from "@/components/NotificationsSidebar";
 import { IoMailOutline } from "react-icons/io5";
 
 const DashboardLayout: React.FC = () => {
@@ -217,7 +216,7 @@ const DashboardLayout: React.FC = () => {
                 </div>
               </div>
             </div>
-            <section className="px-6 mt-20">
+            <section className="mt-13">
               <Outlet />
             </section>
           </div>
