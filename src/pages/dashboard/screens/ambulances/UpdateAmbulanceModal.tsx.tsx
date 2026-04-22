@@ -18,14 +18,22 @@ interface UpdateAmbulanceModalProps {
 
 interface Lead {
   lead_id: string;
+  full_name?: string;
+  email?: string;
+  phone_number?: string;
   lead_data?: {
     full_name: string;
     email: string;
     phone_number: string;
   };
-  full_name?: string;
-  email?: string;
-  phone_number?: string;
+}
+
+interface Driver {
+  driver_id: string;
+  lead_id: string;
+  full_name: string;
+  email: string;
+  phone_number: string;
 }
 
 interface AmbulanceFormData {
@@ -34,6 +42,7 @@ interface AmbulanceFormData {
   model: string;
   ambulance_type: string;
   lead_id: string;
+  driver_id: string;  // Fixed: was "drver_id"
 }
 
 const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
@@ -48,7 +57,8 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
   const { mutate: globalMutate } = useSWRConfig();
   
   // Fetch ambulance leads
-  const { data: leads, isLoading: leadsLoading } = useAmbulanceLeads();
+  const { data: leads, isLoading: leadsLoading } = useAmbulanceLeads('lead');
+  const { data: drivers, isLoading: driversLoading } = useAmbulanceLeads('driver');
 
   // Set form values when ambulance data changes
   useEffect(() => {
@@ -59,6 +69,7 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
         model: ambulance.model,
         ambulance_type: ambulance.ambulance_type,
         lead_id: ambulance.lead_id,
+        driver_id: ambulance.driver_id,
       });
     }
   }, [ambulance, open, form]);
@@ -70,14 +81,14 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
     }
   }, [open, form]);
 
-  // Helper to get lead name
+  // Helper to get lead name (handles different data structures)
   const getLeadName = (lead: Lead) => {
     if (lead.lead_data?.full_name) return lead.lead_data.full_name;
     if (lead.full_name) return lead.full_name;
     return "Unknown";
   };
 
-  // Helper to get lead phone
+  // Helper to get lead phone (handles different data structures)
   const getLeadPhone = (lead: Lead) => {
     if (lead.lead_data?.phone_number) return lead.lead_data.phone_number;
     if (lead.phone_number) return lead.phone_number;
@@ -100,6 +111,7 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
       model: values.model,
       ambulance_type: values.ambulance_type,
       lead_id: values.lead_id,
+      driver_id: values.driver_id,
     };
 
     try {
@@ -219,12 +231,40 @@ const UpdateAmbulanceModal: React.FC<UpdateAmbulanceModalProps> = ({
             loading={leadsLoading}
             showSearch
             optionFilterProp="children"
+            filterOption={(input, option) => 
+              (option?.children as unknown as string)?.toLowerCase().includes(input.toLowerCase())
+            }
             className="rounded-lg"
             notFoundContent={leadsLoading ? "Loading..." : "No leads available"}
           >
             {leads?.map((lead: Lead) => (
               <Option key={lead.lead_id} value={lead.lead_id}>
-                {getLeadName(lead)} {getLeadPhone(lead) && `- ${getLeadPhone(lead)}`}
+                {getLeadName(lead)} - {getLeadPhone(lead)}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          label="Ambulance Driver"
+          name="driver_id"
+          rules={[{ required: true, message: "Ambulance driver is required" }]}
+        >
+          <Select 
+            size="large" 
+            placeholder="Select ambulance driver"
+            loading={driversLoading}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => 
+              (option?.children as unknown as string)?.toLowerCase().includes(input.toLowerCase())
+            }
+            className="rounded-lg"
+            notFoundContent={driversLoading ? "Loading..." : "No drivers available"}
+          >
+            {drivers?.map((driver: Driver) => (
+              <Option key={driver.lead_id} value={driver.lead_id}>
+                {driver.full_name} - {driver.phone_number}
               </Option>
             ))}
           </Select>

@@ -21,6 +21,13 @@ interface Lead {
   email: string;
   phone_number: string;
 }
+interface Driver {
+  driver_id: string;
+  lead_id: string;
+  full_name: string;
+  email: string;
+  phone_number: string;
+}
 
 interface AmbulanceFormData {
   plate_number: string;
@@ -28,6 +35,7 @@ interface AmbulanceFormData {
   model: string;
   ambulance_type: string;
   lead_id: string;
+  driver_id: string;
 }
 
 const AddAmbulanceModal: React.FC<AddAmbulanceModalProps> = ({
@@ -41,7 +49,8 @@ const AddAmbulanceModal: React.FC<AddAmbulanceModalProps> = ({
   const { mutate: globalMutate } = useSWRConfig();
   
   // Fetch ambulance leads
-  const { data: leads, isLoading: leadsLoading } = useAmbulanceLeads();
+  const { data: leads, isLoading: leadsLoading } = useAmbulanceLeads('lead');
+  const { data: drivers, isLoading: driversLoading } = useAmbulanceLeads('driver');
 
   // Reset form when modal closes
   useEffect(() => {
@@ -61,6 +70,7 @@ const AddAmbulanceModal: React.FC<AddAmbulanceModalProps> = ({
       model: values.model,
       ambulance_type: values.ambulance_type,
       lead_id: values.lead_id,
+      driver_id: values.driver_id,
     };
 
     try {
@@ -193,7 +203,29 @@ const AddAmbulanceModal: React.FC<AddAmbulanceModalProps> = ({
             ))}
           </Select>
         </Form.Item>
-
+        <Form.Item
+          label="Ambulance Driver"
+          name="driver_id"
+          rules={[{ required: true, message: "Ambulance driver is required" }]}
+        >
+          <Select 
+            size="large" 
+            placeholder="Select ambulance driver"
+            loading={driversLoading}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => 
+              (option?.children as unknown as string)?.toLowerCase().includes(input.toLowerCase())
+            }
+            className="rounded-lg"
+          >
+            {drivers?.map((driver: Driver) => (
+              <Option key={driver.lead_id} value={driver.lead_id}>
+                {driver.full_name} - {driver.phone_number}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
         <div className="flex justify-end gap-4 pt-4">
           <Button 
             className="px-8! bg-[#F5EAEA]! h-[45px]! text-[#DB4A47]! font-medium! border-none! rounded-lg"

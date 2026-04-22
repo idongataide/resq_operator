@@ -7,11 +7,11 @@ interface AmbulanceLeadsParams {
   type?: string;
 }
 
-export const useAmbulanceLeads = () => {
+export const useAmbulanceLeads = (type?: 'lead' | 'driver') => {
   const { data, isLoading, mutate } = useSWR(
-    "/providers/ambulance-leads",
+    type ? `/providers/ambulance-leads?type=${type}` : "/providers/ambulance-leads",
     () => {
-      return getAmbulanceLeads().then((res) => {
+      return getAmbulanceLeads(type).then((res) => {
         return res?.data;
       });
     },

@@ -1,9 +1,17 @@
 import { axiosAPIInstance } from "./interceptor";
 
-export const getAmbulanceLeads = async () => {
+// api/ambulanceLeadsApi.ts
+
+export const getAmbulanceLeads = async (type?: string) => {
   try {
+    // Build URL with query parameter if type is provided
+    let url = `/accounts/lead-lists`;
+    if (type && (type === 'lead' || type === 'driver')) {
+      url = `${url}?type=${type}`;
+    }
+    
     return await axiosAPIInstance
-      .get(`/accounts/lead-lists`)
+      .get(url)
       .then((res) => {
         return res?.data;
       });
@@ -11,6 +19,7 @@ export const getAmbulanceLeads = async () => {
     return error;
   }
 };
+
 
 export const getAmbulanceLeadsSearch = async (params?: { online?: string; type?: string }) => {
   try {
