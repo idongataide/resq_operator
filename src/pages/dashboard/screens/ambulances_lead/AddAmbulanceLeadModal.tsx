@@ -14,6 +14,24 @@ interface AddAmbulanceLeadModalProps {
   onLeadAdded?: () => void;
 }
 
+// Helper function to format phone number to digits only (234 format)
+const formatToDigitsOnly = (phone: string): string => {
+  // Remove all non-digit characters
+  let cleaned = phone.replace(/\D/g, '');
+  
+  // If number starts with 0, remove it and add 234
+  if (cleaned.startsWith('0')) {
+    cleaned = '+234' + cleaned.substring(1);
+  }
+  
+  // If number doesn't start with 234, add it
+  if (!cleaned.startsWith('+234')) {
+    cleaned = '+234' + cleaned;
+  }
+  
+  return cleaned;
+};
+
 const AddAmbulanceLeadModal: React.FC<AddAmbulanceLeadModalProps> = ({
   open,
   onClose,
@@ -35,13 +53,16 @@ const AddAmbulanceLeadModal: React.FC<AddAmbulanceLeadModalProps> = ({
     setIsSubmitting(true);
     const loadingToast = toast.loading("Adding ambulance lead...");
 
+    // Format phone numbers: remove leading 0 and add 234 (digits only, no +)
+    const formattedPhone = formatToDigitsOnly(values.phone_number);
+
     const payload = {
       full_name: values.full_name,
-      phone_number: values.phone_number,
+      phone_number: formattedPhone,
       emergency_contact: values.emergency_contact,
       residential_address: values.residential_address,
-      email: values.email || "", // Optional field
-      type: values.user_type, // Add user_type to payload
+      email: values.email || "",
+      type: values.user_type,
     };
 
     try {
@@ -105,7 +126,7 @@ const AddAmbulanceLeadModal: React.FC<AddAmbulanceLeadModalProps> = ({
           name="phone_number"
           rules={[{ required: true, message: "Phone number is required" }]}
         >
-          <Input size="large" placeholder="Enter phone number" />
+          <Input size="large" placeholder="e.g., 08012345678" />
         </Form.Item>
 
         <Form.Item
@@ -113,7 +134,7 @@ const AddAmbulanceLeadModal: React.FC<AddAmbulanceLeadModalProps> = ({
           name="emergency_contact"
           rules={[{ required: true, message: "Emergency contact is required" }]}
         >
-          <Input size="large" placeholder="Enter emergency contact" />
+          <Input size="large" placeholder="e.g., 08012345678" />
         </Form.Item>
 
         <Form.Item

@@ -15,6 +15,34 @@ interface UpdateAmbulanceLeadModalProps {
   lead: any | null;
 }
 
+// Helper function to format phone number to digits only (234 format)
+const formatToDigitsOnly = (phone: string): string => {
+  // Remove all non-digit characters
+  let cleaned = phone.replace(/\D/g, '');
+  
+  // If number starts with 0, remove it and add 234
+  if (cleaned.startsWith('0')) {
+    cleaned = '+234' + cleaned.substring(1);
+  }
+  
+  // If number doesn't start with 234, add it
+  if (!cleaned.startsWith('+234')) {
+    cleaned = '+234' + cleaned;
+  }
+  
+  return cleaned;
+};
+
+// Helper function to display phone number in local format for editing
+const displayPhoneNumber = (phone: string): string => {
+  if (!phone) return '';
+  // Convert from 2348012345678 to 08012345678 for display
+  if (phone.startsWith('+234')) {
+    return '0' + phone.substring(4);
+  }
+  return phone;
+};
+
 const UpdateAmbulanceLeadModal: React.FC<UpdateAmbulanceLeadModalProps> = ({
   open,
   onClose,
@@ -31,9 +59,9 @@ const UpdateAmbulanceLeadModal: React.FC<UpdateAmbulanceLeadModalProps> = ({
     if (lead && open) {
       form.setFieldsValue({
         full_name: lead.full_name,
-        phone_number: lead.phone_number,
-        emergency_contact: lead.emergency_contact,
-        residential_address: lead.address, // Map address to residential_address
+        phone_number: displayPhoneNumber(lead.phone_number),
+        emergency_contact: displayPhoneNumber(lead.emergency_contact),
+        residential_address: lead.address,
         email: lead.email,
         user_type: lead.user_type,
       });
@@ -56,9 +84,12 @@ const UpdateAmbulanceLeadModal: React.FC<UpdateAmbulanceLeadModalProps> = ({
     setIsSubmitting(true);
     const loadingToast = toast.loading("Updating ambulance lead...");
 
+    // Format phone numbers: remove leading 0 and add 234 (digits only, no +)
+    const formattedPhone = formatToDigitsOnly(values.phone_number);
+
     const payload = {
       full_name: values.full_name,
-      phone_number: values.phone_number,
+      phone_number: formattedPhone,
       emergency_contact: values.emergency_contact,
       residential_address: values.residential_address,
       email: values.email || "",
@@ -125,7 +156,7 @@ const UpdateAmbulanceLeadModal: React.FC<UpdateAmbulanceLeadModalProps> = ({
           name="phone_number"
           rules={[{ required: true, message: "Phone number is required" }]}
         >
-          <Input size="large" placeholder="Enter phone number" />
+          <Input size="large" placeholder="e.g., 08012345678" />
         </Form.Item>
 
         <Form.Item
@@ -133,7 +164,7 @@ const UpdateAmbulanceLeadModal: React.FC<UpdateAmbulanceLeadModalProps> = ({
           name="emergency_contact"
           rules={[{ required: true, message: "Emergency contact is required" }]}
         >
-          <Input size="large" placeholder="Enter emergency contact" />
+          <Input size="large" placeholder="e.g., 08012345678" />
         </Form.Item>
 
         <Form.Item
