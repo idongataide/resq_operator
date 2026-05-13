@@ -22,7 +22,7 @@ const { Option } = Select;
 
 interface AdminUser {
   auth_id: string;
-  full_name: string;
+  name: string;
   email: string;
   phone_number: string;
   position: string;
@@ -149,28 +149,32 @@ const UserManagementTable = () => {
       key: "sn",
       width: 70,
       render: (_: any, __: any, index: number) => (
-        <span className="text-sm text-[#808D97]">{index + 1}</span>
+        <span className="font-medium text-[#000A0F]">{index + 1}</span>
       ),
     },
     {
-      title: "Name",
-      dataIndex: "full_name",
-      key: "full_name",
-      sorter: (a: AdminUser, b: AdminUser) => a.full_name.localeCompare(b.full_name),
-      render: (text: string, record: AdminUser) => (
-        <div>
-          <div className="font-medium text-[#000A0F]">{text}</div>
-          {record.phone_number && (
-            <div className="text-xs text-[#808D97]">{record.phone_number}</div>
-          )}
-        </div>
-      ),
+        title: "Name",
+        dataIndex: "name",
+        key: "name",
+        sorter: (a: AdminUser, b: AdminUser) => a.name.localeCompare(b.name),
+        render: (text: string) => (
+            <div className="font-medium text-[#000A0F]">{text}</div>
+        ),
     },
     {
-      title: "Email Address",
-      dataIndex: "email",
-      key: "email",
-      sorter: (a: AdminUser, b: AdminUser) => a.email.localeCompare(b.email),
+        title: "Phone Number",
+        dataIndex: "phone_number",
+        key: "phone_number",
+        sorter: (a: AdminUser, b: AdminUser) => (a.phone_number || "").localeCompare(b.phone_number || ""),
+        render: (text: string) => (
+            <div className="font-medium text-[#000A0F]">{text || "-"}</div>
+        ),
+    },
+    {
+        title: "Email Address",
+        dataIndex: "email",
+        key: "email",
+        sorter: (a: AdminUser, b: AdminUser) => a.email.localeCompare(b.email),
     },
     {
       title: "Position",
