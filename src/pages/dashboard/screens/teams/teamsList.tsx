@@ -22,7 +22,7 @@ const { Option } = Select;
 
 interface AdminUser {
   auth_id: string;
-  name: string;
+  full_name: string;
   email: string;
   phone_number: string;
   position: string;
@@ -149,14 +149,14 @@ const UserManagementTable = () => {
       key: "sn",
       width: 70,
       render: (_: any, __: any, index: number) => (
-        <span className="font-medium text-[#000A0F]">{index + 1}</span>
+        <span className="text-sm text-[#808D97]">{index + 1}</span>
       ),
     },
     {
         title: "Name",
-        dataIndex: "name",
+        dataIndex: "full_name",
         key: "name",
-        sorter: (a: AdminUser, b: AdminUser) => a.name.localeCompare(b.name),
+        sorter: (a: AdminUser, b: AdminUser) => a.full_name.localeCompare(b.full_name),
         render: (text: string) => (
             <div className="font-medium text-[#000A0F]">{text}</div>
         ),
