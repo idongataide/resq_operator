@@ -13,7 +13,7 @@ interface InvoiceCardProps {
   booking: any;
   bookingType?: "emergency" | "non-emergency";
   onSuccess?: () => void;
-  onRefresh?: () => void; // Add refresh callback
+  onRefresh?: () => void;
 }
 
 interface SelectedFee {
@@ -38,6 +38,30 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
   const invoices = booking?.invoice || booking?.service_rendered_data || [];
   const hasInvoices = invoices.length > 0;
   const isEmergency = bookingType === "emergency";
+  
+  // Get payment status from booking data
+  // Adjust this based on your actual data structure
+  const paymentStatus = booking?.payment_status === 1 || booking?.payment_status === "paid" ? "Paid" : "Pending";
+  const isPaid = paymentStatus === "Paid";
+  
+  // Get payment method
+  const paymentMethod = booking?.payment_method || "Not specified";
+  
+  // Get payment date
+  const paymentDate = booking?.payment_date || booking?.updated_at || booking?.created_at;
+  
+  // Format date
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "Not available";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   // Extract fees array from response
   const feesList = feesData?.data || feesData || [];
@@ -149,12 +173,18 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
           </h2>
         </div>
 
-        {/* Status Badge - Hide add button for emergency */}
+        {/* Payment Status Badge */}
         {hasInvoices ? (
-          <div className="flex items-center gap-2 bg-[#E8F5E9] px-3 py-1 rounded-full">
-            <div className="w-2 h-2 rounded-full bg-[#4EA507]" />
-            <span className="text-sm text-[#4EA507] font-medium">
-              {invoices.length} item(s)
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${
+            isPaid ? 'bg-[#E8F5E9]' : 'bg-[#FFF7E8]'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${
+              isPaid ? 'bg-[#4EA507]' : 'bg-[#BB7F05]'
+            }`} />
+            <span className={`text-sm font-medium ${
+              isPaid ? 'text-[#4EA507]' : 'text-[#BB7F05]'
+            }`}>
+              {paymentStatus}
             </span>
           </div>
         ) : showAddButton ? (
@@ -171,7 +201,6 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
             </button>
           </div>
         ) : (
-          // For emergency without invoices, show "Not Applicable" without plus button
           <div className="flex items-center gap-2 bg-[#FFF7E8] px-3 py-1 rounded-full">
             <div className="w-2 h-2 rounded-full bg-[#BB7F05]" />
             <span className="text-sm text-[#BB7F05] font-medium">
@@ -195,6 +224,15 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
         </div>
 
         <div className="bg-[#fff] p-5">
+          {/* Payment Method - Show when invoices exist */}
+          {hasInvoices && (
+            <div className="flex justify-between py-3 border-b border-[#E4E7EC] text-sm">
+              <span className="text-[#000A0F]">Payment Method</span>
+              <span className="text-[#021C2F] font-medium">{paymentMethod}</span>
+            </div>
+          )}
+          
+          
           {/* Dynamic Service Items - Show invoices if exists, otherwise show selected fees */}
           {hasInvoices ? (
             // Display existing invoices
@@ -243,6 +281,10 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
           )}
         </div>
         
+        {/* Divider - only show if there are items */}
+        {(hasInvoices || selectedFees.length > 0) && (
+          <hr className="my-5 border-[#E4E7EC]" />
+        )}
 
         {/* Send Invoice Button - Only show for non-emergency without existing invoices */}
         {showSendButton && (
