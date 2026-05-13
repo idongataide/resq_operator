@@ -25,6 +25,7 @@ const AddFeeModal: React.FC<AddFeeModalProps> = ({
 }) => {
   const [form] = Form.useForm<FormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const { mutate: globalMutate } = useSWRConfig();
 
   const handleSubmit = async (values: FormValues) => {
@@ -54,6 +55,7 @@ const AddFeeModal: React.FC<AddFeeModalProps> = ({
         
         // Close modal and reset form
         form.resetFields();
+        setSelectedCategory(undefined);
         onClose();
       } else {
         // Assume success if we got here without error
@@ -61,6 +63,7 @@ const AddFeeModal: React.FC<AddFeeModalProps> = ({
         globalMutate('/settings/fees');
         onSuccess?.();
         form.resetFields();
+        setSelectedCategory(undefined);
         onClose();
       }
     } catch (error: any) {
@@ -73,7 +76,16 @@ const AddFeeModal: React.FC<AddFeeModalProps> = ({
 
   const handleClose = () => {
     form.resetFields();
+    setSelectedCategory(undefined);
     onClose();
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    // Clear service_type when category changes to emergency
+    if (value === 'emergency') {
+      form.setFieldsValue({ service_type: undefined });
+    }
   };
 
   return (
@@ -88,7 +100,7 @@ const AddFeeModal: React.FC<AddFeeModalProps> = ({
       {/* Header */}
       <div className="bg-[#F3F5F9] px-4 py-6">
         <h2 className="text-xl font-semibold text-[#000A0F]">
-          Add New Cost Point
+          Add New Service Cost
         </h2>
       </div>
 
@@ -157,6 +169,7 @@ const AddFeeModal: React.FC<AddFeeModalProps> = ({
               className="rounded-lg!"
               placeholder="Select category (optional)"
               allowClear
+              onChange={handleCategoryChange}
               options={[
                 { label: 'Emergency', value: 'emergency' },
                 { label: 'Non-Emergency', value: 'non-emergency' },
@@ -164,26 +177,28 @@ const AddFeeModal: React.FC<AddFeeModalProps> = ({
             />
           </Form.Item>
 
-          {/* Service Type - Optional */}
-          <Form.Item
-            name="service_type"
-            label="Service Type"
-            tooltip="Optional: Select the service type"
-          >
-            <Select
-              size="large"
-              className="rounded-lg!"
-              placeholder="Select service type (optional)"
-              allowClear
-              options={[
-                { label: 'Event', value: 'event' },
-                { label: 'Hospital Visit', value: 'hospital-visit' },
-              ]}
-            />
-          </Form.Item>
+          {/* Service Type - Only show if category is NOT emergency */}
+          {selectedCategory !== 'emergency' && (
+            <Form.Item
+              name="service_type"
+              label="Service Type"
+              tooltip="Optional: Select the service type"
+            >
+              <Select
+                size="large"
+                className="rounded-lg!"
+                placeholder="Select service type (optional)"
+                allowClear
+                options={[
+                  { label: 'Event', value: 'event' },
+                  { label: 'Hospital Visit', value: 'hospital-visit' },
+                ]}
+              />
+            </Form.Item>
+          )}
 
           {/* Buttons */}
-          <Form.Item className="mb-0">
+          <Form.Item className="mb-0 mt-10!">
             <div className="flex justify-end gap-4">
               <Button
                 size="large"

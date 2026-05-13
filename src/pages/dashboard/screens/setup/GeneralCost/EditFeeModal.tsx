@@ -42,16 +42,18 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
 }) => {
   const [form] = Form.useForm<FormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const { mutate: globalMutate } = useSWRConfig();
 
-  console.log("Editing fee:", fee);
 
   useEffect(() => {
     if (fee && open) {
+      const categoryValue = fee.category || undefined;
+      setSelectedCategory(categoryValue);
       form.setFieldsValue({
         name: fee.name || '',
         amount: fee.amount || 0,
-        category: fee.category || undefined,
+        category: categoryValue,
         service_type: fee.service_type || undefined,
       });
     }
@@ -105,7 +107,16 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
 
   const handleClose = () => {
     form.resetFields();
+    setSelectedCategory(undefined);
     onClose();
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    // Clear service_type when category changes to emergency
+    if (value === 'emergency') {
+      form.setFieldsValue({ service_type: undefined });
+    }
   };
 
   return (
@@ -120,7 +131,7 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
       {/* Header */}
       <div className="bg-[#F3F5F9] px-4 py-6">
         <h2 className="text-xl font-semibold text-[#000A0F]">
-          Edit Cost Point
+          Edit Service Cost
         </h2>
       </div>
 
@@ -188,6 +199,7 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
               className="rounded-lg!"
               placeholder="Select category (optional)"
               allowClear
+              onChange={handleCategoryChange}
               options={[
                 { label: 'Emergency', value: 'emergency' },
                 { label: 'Non-Emergency', value: 'non-emergency' },
@@ -195,23 +207,25 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
             />
           </Form.Item>
 
-          {/* Service Type - Optional */}
-          <Form.Item
-            name="service_type"
-            label="Service Type"
-            tooltip="Optional: Select the service type"
-          >
-            <Select
-              size="large"
-              className="rounded-lg!"
-              placeholder="Select service type (optional)"
-              allowClear
-              options={[
-                { label: 'Event', value: 'event' },
-                { label: 'Hospital Visit', value: 'hospital-visit' },
-              ]}
-            />
-          </Form.Item>
+          {/* Service Type - Only show if category is NOT emergency */}
+          {selectedCategory !== 'emergency' && (
+            <Form.Item
+              name="service_type"
+              label="Service Type"
+              tooltip="Optional: Select the service type"
+            >
+              <Select
+                size="large"
+                className="rounded-lg!"
+                placeholder="Select service type (optional)"
+                allowClear
+                options={[
+                  { label: 'Event', value: 'event' },
+                  { label: 'Hospital Visit', value: 'hospital-visit' },
+                ]}
+              />
+            </Form.Item>
+          )}
 
           {/* Buttons */}
           <Form.Item className="mb-0">

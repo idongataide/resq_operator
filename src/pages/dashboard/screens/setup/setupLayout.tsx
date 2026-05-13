@@ -12,7 +12,7 @@ const SetupLayout: React.FC = () => {
   const tabItems = [
     {
       key: "general",
-      label: "General Cost Points",
+      label: "Service Cost",
       children: <GeneralCostPointsTable />,
     },
     // {

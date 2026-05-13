@@ -156,11 +156,11 @@ const filteredData = feesArray.filter((fee: Fee) =>
         <div className="p-6 py-4 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h1 className="text-[#354959] uppercase text-md font-bold">
-              General Cost Points  
+              Service Cost  
             </h1>  
             <div className="gap-3 flex">
               <Input
-                placeholder="Search cost points..."
+                placeholder="Search service cost..."
                 prefix={<SearchOutlined className="text-gray-400" />}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}

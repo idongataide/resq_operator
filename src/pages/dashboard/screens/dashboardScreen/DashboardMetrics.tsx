@@ -59,37 +59,31 @@ const DashboardMetrics: React.FC = () => {
   const metrics = [
     {
       id: 'total',
-      title: 'Total Booking',
+      title: 'Accepted Bookings',
       value: counts?.total_req?.toLocaleString() || 'N/A',
       bgColor: '#F6F8F9'
     },
     {
       id: 'total_emergency',
-      title: 'Emergency',
+      title: 'Ongoing Bookings',
       value: counts?.total_emergency?.toLocaleString() || 'N/A',
       bgColor: '#FFF7E8'
-    },
-    {
-      id: 'total_non_emergency',
-      title: 'Non-Emergency',
-      value: counts?.total_non_emergency?.toLocaleString() || 'N/A',
-      bgColor: '#F2F9FE'
-    },
+    },   
     {
       id: 'total_ongoing',
-      title: 'Ongoing',
+      title: 'Scheduled Bookings',
       value: counts?.total_ongoing?.toLocaleString() || 'N/A',
       bgColor: '#F8FEF5'
     },
     {
       id: 'cancelled',
-      title: 'Completed',
+      title: 'Completed Bookings',
       value: counts?.total_cancelled?.toLocaleString() || 'N/A',
       bgColor: '#FDF5F5'
     },
     {
       id: 'total_cancelled',
-      title: 'Canceled',
+      title: 'Rejected Bookings',
       value: counts?.total_cancelled?.toLocaleString() || 'N/A',
       bgColor: '#F3F5F9'
     }

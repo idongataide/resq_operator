@@ -149,6 +149,11 @@ input:-internal-autofill-selected {
   overflow-x: hidden !important;
 }
 
+.ant-table-cell{
+  text-transform: capitalize;
+}
+
+
 .ant-table {
   overflow-x: auto;
   scrollbar-width: thin; /* For Firefox - makes scrollbar thinner */

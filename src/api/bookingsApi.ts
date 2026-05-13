@@ -1,10 +1,10 @@
 import { axiosAPIInstance } from "./interceptor";
 
-// Get all bookings
-export const getBookings = async () => {
+export const getBookings = async (booking_type?: string) => {
   try {
+    const endpoint = booking_type === "non-emergency" ? "/bookings/schedules" : "/bookings";
     return await axiosAPIInstance
-      .get(`/bookings`)
+      .get(endpoint)
       .then((res) => {
         return res?.data;
       });
@@ -27,10 +27,13 @@ export const getBookingCounts = async () => {
 };
 
 // Get single booking
-export const getBookingById = async (booking_id: string) => {
+export const getBookingById = async (booking_id: string, booking_type?: string) => {
   try {
+    const endpoint = booking_type === "non-emergency" 
+      ? `/bookings/schedules/${booking_id}` 
+      : `/bookings/${booking_id}`;
     return await axiosAPIInstance
-      .get(`/bookings/${booking_id}`)
+      .get(endpoint)
       .then((res) => {
         return res?.data;
       });

@@ -1,8 +1,7 @@
 import Images from "@/components/images";
 import React from "react";
-import { Spin } from "antd";
 import { useBookingCounts } from "@/hooks/useBookings";
-
+import { Spin } from "antd";
 
 const BookingMetrics: React.FC = () => {
   const { data: counts, isLoading } = useBookingCounts();
@@ -10,19 +9,19 @@ const BookingMetrics: React.FC = () => {
   const bookingMetrics = [
     {
       id: 'total',
-      title: 'Total Assigned',
+      title: 'Total Bookings',
       value: counts?.total_req?.toLocaleString() || '0',
       bgColor: '#F6F8F9'
     },
     {
       id: 'pending',
-      title: 'Pending',
+      title: 'Pending Bookings',
       value: counts?.total_pending?.toLocaleString() || '0',
       bgColor: '#FFF7E8'
     },
     {
       id: 'ongoing',
-      title: 'Ongoing',
+      title: 'Ongoing Bookings',
       value: counts?.total_ongoing?.toLocaleString() || '0',
       bgColor: '#FDF6F6'
     },
@@ -32,19 +31,18 @@ const BookingMetrics: React.FC = () => {
       value: counts?.total_completed?.toLocaleString() || '0',
       bgColor: '#F8FEF5'
     },
-    // Optional: Add cancelled if you want to display it
-    // {
-    //   id: 'cancelled',
-    //   title: 'Cancelled Bookings',
-    //   value: counts?.total_cancelled?.toLocaleString() || '0',
-    //   bgColor: '#FEE9E7'
-    // }
+  {
+      id: 'cancelled',
+      title: 'Cancelled Bookings',
+      value: counts?.total_cancelled?.toLocaleString() || '0',
+      bgColor: '#FEE9E7'
+    }
   ];
 
   return (
     <>
       <div className="w-full">
-        <div className="grid grid-cols-4 gap-4 mb-6 bg-[#FFFFFF] p-4 rounded-lg">
+        <div className="grid grid-cols-3 lg:grid-cols-5 gap-4 mb-6 bg-[#FFFFFF] p-4 rounded-lg">
           {bookingMetrics.map((metric) => (
             <div 
               key={metric.id} 
