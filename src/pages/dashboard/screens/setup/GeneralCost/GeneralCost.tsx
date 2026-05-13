@@ -20,6 +20,8 @@ export interface Fee {
   service_id: string;
   name: string;
   amount: number;
+  category?: string;
+  service_type?: string;
   updatedAt?: string;
   createdAt?: string;
 }
@@ -94,6 +96,18 @@ const GeneralCostPointsTable = () => {
         </span>
       </div>
     ),
+  },
+   {
+    title: "Category",
+    dataIndex: "category",
+    key: "category",
+    className: "capitalize"
+  },
+   {
+    title: "Service Type",
+    dataIndex: "service_type",
+    key: "service_type",
+    className: "capitalize"
   },
   {
     title: "Action",

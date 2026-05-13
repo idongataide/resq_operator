@@ -26,7 +26,7 @@ export const addFees = async (data: any) => {
   }
 };
 
-export const updateFee = async (feeId: string, data: { amount: string; name: string; }) => {
+export const updateFee = async (feeId: string, data: { amount: string; name: string; category?: string; service_type?:string }) => {
   try {
     return await axiosAPIInstance
       .put(`/accounts/services/${feeId}`, data)

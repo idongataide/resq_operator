@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Button } from "antd";
+import { Modal, Form, Input, Button, Select } from "antd";
 import { FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { updateFee } from "@/api/settingsApi";
@@ -16,6 +16,8 @@ interface Fee {
   system_generated?: boolean;
   createdAt?: string;
   updatedAt?: string;
+  category?: string;
+  service_type?: string;
 }
 
 interface EditFeeModalProps {
@@ -28,6 +30,8 @@ interface EditFeeModalProps {
 interface FormValues {
   name: string;
   amount: number;
+  category?: string;
+  service_type?: string;
 }
 
 const EditFeeModal: React.FC<EditFeeModalProps> = ({
@@ -47,6 +51,8 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
       form.setFieldsValue({
         name: fee.name || '',
         amount: fee.amount || 0,
+        category: fee.category || undefined,
+        service_type: fee.service_type || undefined,
       });
     }
   }, [fee, open, form]);
@@ -64,6 +70,8 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
       const response = await updateFee(fee.service_id, {
         name: values.name,
         amount: values.amount.toString(),
+        category: values.category,
+        service_type: values.service_type,
       });
       
       // Check if response is an error
@@ -166,6 +174,42 @@ const EditFeeModal: React.FC<EditFeeModalProps> = ({
               type="number"
               min="0"
               step="0.01"
+            />
+          </Form.Item>
+
+          {/* Category - Optional */}
+          <Form.Item
+            name="category"
+            label="Category"
+            tooltip="Optional: Select a category for this cost"
+          >
+            <Select
+              size="large"
+              className="rounded-lg!"
+              placeholder="Select category (optional)"
+              allowClear
+              options={[
+                { label: 'Emergency', value: 'emergency' },
+                { label: 'Non-Emergency', value: 'non-emergency' },
+              ]}
+            />
+          </Form.Item>
+
+          {/* Service Type - Optional */}
+          <Form.Item
+            name="service_type"
+            label="Service Type"
+            tooltip="Optional: Select the service type"
+          >
+            <Select
+              size="large"
+              className="rounded-lg!"
+              placeholder="Select service type (optional)"
+              allowClear
+              options={[
+                { label: 'Event', value: 'event' },
+                { label: 'Hospital Visit', value: 'hospital-visit' },
+              ]}
             />
           </Form.Item>
 
