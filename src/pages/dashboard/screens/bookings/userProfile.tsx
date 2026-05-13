@@ -68,7 +68,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ booking }) => {
       const response = await acceptBooking({
         booking_id: booking.booking_id,
         lead_id: "",
-        booking_reason: reason || "Rejected by admin",
+        // booking_reason: reason || "Rejected by admin",
       });
       
       if (response?.status === 'ok') {

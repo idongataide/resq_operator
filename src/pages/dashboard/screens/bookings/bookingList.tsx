@@ -18,12 +18,14 @@ import AcceptBookingModal from "./AcceptBookingModal";
 
 interface Booking {
   booking_id: string;
+  schedule_id?: string;
   booking_ref: string;
   customer_data: {
     customer_name: string;
     customer_phone: string;
     user_id: string;
   };
+  operation_status: number; // 0: Incoming, 1: Admin Accepted, 2: Assigned Operator, 3: En-route Pickup, 4: Arrived at Pickup, 5: Picked Patient, 6: En-route to Dropoff, 7: Completed, 8: Cancelled
   phone_number: string;
   payment_method: string;
   booking_status: string;
@@ -38,10 +40,11 @@ interface Booking {
   booking_reason?: string;
   estimated_cost?: number;
   final_cost?: number;
+  service_type?: string; // Add service_type field
 }
 
 interface BookingListProps {
-  bookingType?: string;
+  bookingType?: "all" | "emergency" | "non-emergency";
 }
 
 const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
@@ -56,6 +59,7 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
   const { data: bookings, isLoading, mutate } = useBookings(bookingType);
   const [selectedBookingForAccept, setSelectedBookingForAccept] = useState<Booking | null>(null);
 
+  // Check if it's emergency booking
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -70,9 +74,29 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
   };
 
 
+   const getStatus = (record: Booking) => {
+    // If operation_status > 2, use booking_status
+    if (record.operation_status > 2) {
+      return record.booking_status;
+    }
+    
+    // Otherwise, map operation_status to custom labels
+    const statusMap: Record<number, { label: string; bg: string; text: string }> = {
+      0: { label: 'Incoming Booking', bg: '#FFF7E8', text: '#BB7F05' },
+      1: { label: 'Admin Accepted', bg: '#F2F9FE', text: '#007BFF' },
+      2: { label: 'Assigned Operator', bg: '#E8F0FE', text: '#1A5F7A' },
+    };
+    
+    return statusMap[record.operation_status] || { label: 'Unknown', bg: '#F5F5F5', text: '#666666' };
+  };
+
   // Get status badge
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { bg: string; text: string; label: string }> = {
+  const getStatusBadge = (record: Booking) => {
+    const status = getStatus(record);
+    
+    // If status is a string (booking_status), use the original status config
+    if (typeof status === 'string') {
+      const statusConfig: Record<string, { bg: string; text: string; label: string }> = {
         PENDING: { bg: '#FFF7E8', text: '#BB7F05', label: 'Pending' },
         REQUEST_ACCEPTED: { bg: '#F8FEF5', text: '#4EA507', label: 'Accepted' },
         ENROUTE_PICKUP: { bg: '#F2F9FE', text: '#007BFF', label: 'En-route Pickup' },
@@ -81,22 +105,32 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
         ENROUTE_TO_DROPOFF: { bg: '#F2F9FE', text: '#007BFF', label: 'En-route to Dropoff' },
         COMPLETED: { bg: '#E8F5E9', text: '#1B5E20', label: 'Completed' },
         CANCELED: { bg: '#FDF5F5', text: '#DE3631', label: 'Cancelled' },
-    };
-
-    const config = statusConfig[status] || statusConfig.PENDING;
-    
-    return (
-       <span
-        className="px-3 py-1 rounded-md text-sm font-medium inline-flex items-center gap-2"
-        style={{ backgroundColor: config.bg, color: config.text }}
+      };
+      
+      const config = statusConfig[status] || statusConfig.PENDING;
+      
+      return (
+        <span
+          className="px-3 py-1 rounded-md text-sm font-medium inline-flex items-center gap-2"
+          style={{ backgroundColor: config.bg, color: config.text }}
         >
-        <span className="w-[6px] h-[6px] rounded-full" style={{ backgroundColor: config.text }}></span> 
-        {config.label}
+          <span className="w-[6px] h-[6px] rounded-full" style={{ backgroundColor: config.text }}></span> 
+          {config.label}
         </span>
+      );
+    }
+    
+    // Otherwise, it's an object from operation_status mapping
+    return (
+      <span
+        className="px-3 py-1 rounded-md text-sm font-medium inline-flex items-center gap-2"
+        style={{ backgroundColor: status.bg, color: status.text }}
+      >
+        <span className="w-[6px] h-[6px] rounded-full" style={{ backgroundColor: status.text }}></span> 
+        {status.label}
+      </span>
     );
   };
-
-
 
   // Handle cancel booking
   const handleCancel = async () => {
@@ -128,17 +162,29 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
     }
   };
 
+
+  
   // Handle row click - navigate to booking details page
   const handleRowClick = (record: Booking) => {
-    navigate(`/bookings/${record.booking_id}`);
+    const id = record.schedule_id || record.booking_id;
+    const route = bookingType === "non-emergency" 
+      ? `/bookings/schedule/${id}` 
+      : `/bookings/${id}`;
+    navigate(route);
   };
 
   // Handle view details button click
   const handleViewDetails = (record: Booking, e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/bookings/${record.booking_id}`);
+    const id = record.schedule_id || record.booking_id;
+    const route = bookingType === "non-emergency" 
+      ? `/bookings/schedule/${id}` 
+      : `/bookings/${id}`;
+    navigate(route);
   };
 
+
+  
   // Filter bookings based on search
   const filteredBookings = bookings?.filter((booking: Booking) => 
     booking.customer_data?.customer_name?.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -198,99 +244,97 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
     </Menu>
   );
 
-  // Table columns
+
   const columns = [
-    {
-      title: "Date & Time",
-      dataIndex: "created_at",
-      key: "created_at",
-      sorter: (a: Booking, b: Booking) => 
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
-      render: (text: string) => (
-        <div className="flex items-center gap-2 text-[#354959]">
-          <FiClock className="text-gray-400" />
-          {formatDate(text)}
-        </div>
-      ),
+  {
+    title: "Date & Time",
+    dataIndex: "created_at",
+    key: "created_at",
+    sorter: (a: Booking, b: Booking) => 
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+    render: (text: string) => (
+      <div className="flex items-center gap-2 text-[#354959]">
+        <FiClock className="text-gray-400" />
+        {formatDate(text)}
+      </div>
+    ),
+  },
+  {
+    title: "Booking ID",
+    key: "booking_ref",
+    render: (_: any, record: Booking) => (
+      <span className="font-mono text-sm">{record.booking_ref || record.booking_id?.slice(-8).toUpperCase()}</span>
+    ),
+  },
+  {
+    title: "Name",
+    key: "customer_name",
+    render: (_: any, record: Booking) => (
+      <span>{record.customer_data?.customer_name || 'N/A'}</span>
+    ),
+    sorter: (a: Booking, b: Booking) => 
+      (a.customer_data?.customer_name || '').localeCompare(b.customer_data?.customer_name || ''),
+  },
+  {
+    title: "Phone",
+    key: "phone",
+    render: (_: any, record: Booking) => (
+      <span>{record.customer_data?.customer_phone || record.phone_number || 'N/A'}</span>
+    ),
+  },
+  
+  // Only show Service Type for non-emergency bookings
+  ...(bookingType === "non-emergency" ? [{
+    title: "Service Type",
+    key: "booking_reason",
+    render: (_: any, record: Booking) => (
+      <span>{record.booking_reason || 'Emergency'}</span>
+    ),
+  }] : []),
+  
+  {
+    title: "Payment Method",
+    dataIndex: "payment_method",
+    key: "payment_method",
+    render: (text: string) => {
+      if (!text) return 'N/A';
+      return text.charAt(0).toUpperCase() + text.slice(1);
     },
-    {
-      title: "Booking ID",
-      key: "booking_ref",
-      render: (_: any, record: Booking) => (
-        <span className="font-mono text-sm">{record.booking_ref || record.booking_id?.slice(-8).toUpperCase()}</span>
-      ),
-    },
-    {
-      title: "Name",
-      key: "customer_name",
-      render: (_: any, record: Booking) => (
-        <span>{record.customer_data?.customer_name || 'N/A'}</span>
-      ),
-      sorter: (a: Booking, b: Booking) => 
-        (a.customer_data?.customer_name || '').localeCompare(b.customer_data?.customer_name || ''),
-    },
-    {
-      title: "Phone",
-      key: "phone",
-      render: (_: any, record: Booking) => (
-        <span>{record.customer_data?.customer_phone || record.phone_number || 'N/A'}</span>
-      ),
-    },
-    {
-      title: "Payment Method",
-      dataIndex: "payment_method",
-      key: "payment_method",
-      render: (text: string) => {
-        if (!text) return 'N/A';
-        return text.charAt(0).toUpperCase() + text.slice(1);
-      },
-    },
-    {
-        title: "Status",
-        dataIndex: "booking_status",
-        key: "booking_status",
-        render: (status: string) => getStatusBadge(status),
-        filters: [
-        { text: 'Pending', value: 'PENDING' },
-        { text: 'Accepted', value: 'REQUEST_ACCEPTED' },
-        { text: 'En-route Pickup', value: 'ENROUTE_PICKUP' },
-        { text: 'Arrived at Pickup', value: 'ARRIVED_AT_PICKUP' },
-        { text: 'Picked Patient', value: 'PICKED_PATIENT' },
-        { text: 'En-route to Dropoff', value: 'ENROUTE_TO_DROPOFF' },
-        { text: 'Completed', value: 'COMPLETED' },
-        { text: 'Cancelled', value: 'CANCELED' },
-        ],
-        onFilter: (value: boolean | React.Key, record: Booking) => record.booking_status === String(value),
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_: any, record: Booking) => (
-        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-          {/* View Details Icon */}
-          <Button
-            type="text"
-            icon={<EyeOutlined className="text-lg text-[#DB4A47]" />}
+  },
+  {
+    title: "Status",
+    key: "status",
+    render: (_: any, record: Booking) => getStatusBadge(record),
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (_: any, record: Booking) => (
+      <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+        {/* View Details Icon */}
+        <Button
+          type="text"
+          icon={<EyeOutlined className="text-lg text-[#DB4A47]" />}
+          className="border-none shadow-none bg-[#FDF6F6]! rounded-lg w-8 h-8 flex items-center justify-center"
+          onClick={(e) => handleViewDetails(record, e)}
+        />
+        
+        {/* More Actions Dropdown */}
+        <Dropdown 
+          overlay={actionMenu(record)} 
+          trigger={["click"]} 
+          placement="bottomRight"
+        >
+          <Button 
+            type="text" 
+            icon={<EllipsisOutlined className="text-xl font-bold text-[#DB4A47]" />} 
             className="border-none shadow-none bg-[#FDF6F6]! rounded-lg w-8 h-8 flex items-center justify-center"
-            onClick={(e) => handleViewDetails(record, e)}
           />
-          
-          {/* More Actions Dropdown */}
-          <Dropdown 
-            overlay={actionMenu(record)} 
-            trigger={["click"]} 
-            placement="bottomRight"
-          >
-            <Button 
-              type="text" 
-              icon={<EllipsisOutlined className="text-xl font-bold text-[#DB4A47]" />} 
-              className="border-none shadow-none bg-[#FDF6F6]! rounded-lg w-8 h-8 flex items-center justify-center"
-            />
-          </Dropdown>
-        </div>
-      ),
-    },
-  ];
+        </Dropdown>
+      </div>
+    ),
+  },
+];
 
   return (
     <div className="p-2 bg-white min-h-screen rounded-2xl">
@@ -399,17 +443,18 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
           </div>
         </div>
       </Modal>
-      <AcceptBookingModal
-        open={acceptOpen}
-        onClose={() => {
-          setAcceptOpen(false);
-          setSelectedBookingForAccept(null);
-        }}
-        booking={selectedBookingForAccept}
-        onSuccess={() => {
-          mutate();
-        }}
-      />
+    <AcceptBookingModal
+      open={acceptOpen}
+      onClose={() => {
+        setAcceptOpen(false);
+        setSelectedBookingForAccept(null);
+      }}
+      booking={selectedBookingForAccept}
+      bookingType={bookingType}  // ← Add this line
+      onSuccess={() => {
+        mutate();
+      }}
+    />
     </div>
   );
 };

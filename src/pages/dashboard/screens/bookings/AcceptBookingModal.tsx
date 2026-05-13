@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
 import { acceptBooking } from "@/api/bookingsApi";
 import { useAmbulanceLeadsSearch } from "@/hooks/useAmbulanceLeads";
+import { useAmbulances } from "@/hooks/useAmbulance";
 
 const { Option } = Select;
 
@@ -12,25 +13,37 @@ interface AcceptBookingModalProps {
   open: boolean;
   onClose: () => void;
   booking: any;
+  bookingType?: "all" | "emergency" | "non-emergency";
   onSuccess?: () => void;
 }
 
-const AcceptBookingModal = ({ open, onClose, booking, onSuccess }: AcceptBookingModalProps) => {
+const AcceptBookingModal = ({ 
+  open, 
+  onClose, 
+  booking, 
+  bookingType,
+  onSuccess 
+}: AcceptBookingModalProps) => {
   const [selectedAmbulance, setSelectedAmbulance] = useState("");
-  const [reason, setReason] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // Fetch only available ambulances (not on trip)
-  const { data: ambulancesLeads, isLoading: ambulancesLoading } = useAmbulanceLeadsSearch({
-    // online: 'no',
+  // Fetch data based on booking type
+  const { data: ambulancesLeads, isLoading: leadsLoading } = useAmbulanceLeadsSearch({
     type: 'lead',
   });
   
-  console.log("Available ambulances for assignment:s", ambulancesLeads);
+  const { data: ambulances, isLoading: ambulancesLoading } = useAmbulances();
+  
   const { mutate } = useSWRConfig();
 
+  // Determine which data to use and which API call to make
+  const isEmergency = bookingType === "emergency";
+  const ambulanceOptions = isEmergency ? ambulancesLeads : ambulances;
+  const isLoading = isEmergency ? leadsLoading : ambulancesLoading;
+
   const handleAccept = async () => {
-    if (!booking?.booking_id) return;
+    const id = booking?.schedule_id || booking?.booking_id;
+    if (!id) return;   
 
     if (!selectedAmbulance) {
       toast.error("Please select an ambulance");
@@ -41,11 +54,21 @@ const AcceptBookingModal = ({ open, onClose, booking, onSuccess }: AcceptBooking
     const loadingToast = toast.loading('Accepting booking...');
 
     try {
-      const response = await acceptBooking({
-        booking_id: booking.booking_id,
-        lead_id: selectedAmbulance,
-        booking_reason: reason || undefined,
-      });
+      let response;
+      
+      if (isEmergency) {
+        // Emergency booking - use lead_id
+        response = await acceptBooking({
+          booking_id: booking.booking_id,
+          lead_id: selectedAmbulance,
+        });
+      } else {
+        // Non-emergency booking - use ambulance_id
+        response = await acceptBooking({
+          booking_id: booking.schedule_id,
+          ambulance_id: selectedAmbulance,
+        });
+      }
       
       if (response?.status === 'ok') {
         toast.success('Booking accepted successfully!', { id: loadingToast });
@@ -66,8 +89,39 @@ const AcceptBookingModal = ({ open, onClose, booking, onSuccess }: AcceptBooking
 
   const handleClose = () => {
     setSelectedAmbulance("");
-    setReason("");
     onClose();
+  };
+
+  // Get display name based on the data source
+  const getAmbulanceDisplayName = (ambulance: any) => {
+    if (isEmergency) {
+      // From useAmbulanceLeadsSearch
+      return ambulance.full_name || ambulance.lead_name || 'Unnamed Lead';
+    } else {
+      // From useAmbulances - has lead_data with full_name
+      if (ambulance.lead_data?.full_name) {
+        return `${ambulance.lead_data.full_name} - ${ambulance.plate_number || ambulance.model}`;
+      }
+      return ambulance.plate_number || ambulance.model || ambulance.ambulance_type || 'Unnamed Ambulance';
+    }
+  };
+
+  // Get unique key for React
+  const getAmbulanceKey = (ambulance: any) => {
+    if (isEmergency) {
+      return ambulance.lead_id;
+    } else {
+      return ambulance.ambulance_id;
+    }
+  };
+
+  // Get value for the Select component
+  const getAmbulanceValue = (ambulance: any) => {
+    if (isEmergency) {
+      return ambulance.lead_id;
+    } else {
+      return ambulance.ambulance_id;
+    }
   };
 
   return (
@@ -80,31 +134,35 @@ const AcceptBookingModal = ({ open, onClose, booking, onSuccess }: AcceptBooking
       destroyOnClose
     >
       <div className="bg-[#F3F5F9] px-4 py-6">
-        <h2 className="text-xl font-semibold text-[#354959] mb-1">Assign Operator</h2>
+        <h2 className="text-xl font-semibold text-[#354959] mb-1">
+          {isEmergency ? "Assign Operator" : "Assign Ambulance"}
+        </h2>
         <p className="text-sm text-gray-500">This action would approve the booking request</p>
       </div>
       
       <div className="space-y-4 p-6">
         <div className="space-y-2">
-          <label className="text-sm text-[#354959] font-medium">Select Ambulance Lead</label>
+          <label className="text-sm text-[#354959] font-medium">
+            {isEmergency ? "Select Ambulance Lead" : "Select Ambulance"}
+          </label>
           <Select
-            placeholder="Select ambulance"
+            placeholder={isEmergency ? "Select ambulance lead" : "Select ambulance"}
             className="w-full"
             size="large"
             value={selectedAmbulance}
             onChange={(value) => setSelectedAmbulance(value)}
             allowClear
-            loading={ambulancesLoading}
-            notFoundContent={ambulancesLoading ? "Loading..." : "No available ambulances"}
+            loading={isLoading}
+            notFoundContent={isLoading ? "Loading..." : "No available ambulances"}
           >
-            {Array.isArray(ambulancesLeads) && ambulancesLeads?.length > 0 ? (
-                ambulancesLeads?.map((ambulance: any) => (
-                    <Option key={ambulance.lead_id} value={ambulance.lead_id}>
-                    {ambulance.full_name || 'Unnamed'}
-                    </Option>
-                ))
-                ) : (
-                <Option disabled>No ambulances available</Option>
+            {Array.isArray(ambulanceOptions) && ambulanceOptions?.length > 0 ? (
+              ambulanceOptions?.map((ambulance: any) => (
+                <Option key={getAmbulanceKey(ambulance)} value={getAmbulanceValue(ambulance)}>
+                  {getAmbulanceDisplayName(ambulance)}
+                </Option>
+              ))
+            ) : (
+              <Option disabled>No ambulances available</Option>
             )}
           </Select>
         </div>

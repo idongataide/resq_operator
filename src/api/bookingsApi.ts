@@ -42,34 +42,51 @@ export const getBookingById = async (booking_id: string, booking_type?: string) 
   }
 };
 
-// Accept booking
+// In your bookingsApi.ts
 export const acceptBooking = async (data: {
   booking_id: string;
   lead_id?: string;
-  booking_reason?: string;
+  ambulance_id?: string;
 }) => {
   try {
-    return await axiosAPIInstance
-      .post(`/bookings/assign-request`, data)
-      .then((res) => {
-        return res?.data;
-      });
+    // Determine which endpoint to use based on provided data
+    if (data.lead_id) {
+      // Emergency booking
+      return await axiosAPIInstance
+        .post(`/bookings/assign-request`, {
+          booking_id: data.booking_id,
+          lead_id: data.lead_id,
+        })
+        .then((res) => res?.data);
+    } else if (data.ambulance_id) {
+      // Non-emergency booking
+      return await axiosAPIInstance
+        .post(`/bookings/accept-schedule`, {
+          booking_id: data.booking_id,
+          ambulance_id: data.ambulance_id,
+        })
+        .then((res) => res?.data);
+    } else {
+      throw new Error("Invalid request: No ambulance or lead selected");
+    }
   } catch (error) {
     return error;
   }
 };
 
-// Cancel booking
 export const cancelBooking = async (data: {
   booking_id: string;
   reason?: string;
+  isEmergency?: boolean;
 }) => {
   try {
+    const endpoint = data.isEmergency ? `/bookings/cancel-request` : `/bookings/decline-schedule`;
     return await axiosAPIInstance
-      .post(`/bookings/cancel-request`, data)
-      .then((res) => {
-        return res?.data;
-      });
+      .post(endpoint, {
+        booking_id: data.booking_id,
+        reason: data.reason,
+      })
+      .then((res) => res?.data);
   } catch (error) {
     return error;
   }

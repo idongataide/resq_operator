@@ -1,6 +1,7 @@
 // BookingDetailsLayouts.tsx
-import React from "react";
+import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Spin } from "antd";
 import UserProfile from "./userProfile";
 import RequestDetails from "./requestDetails";
@@ -15,20 +16,20 @@ import { useBooking } from "@/hooks/useBookings";
 
 const BookingDetailsLayouts: React.FC = () => {
     const { booking_id } = useParams<{ booking_id: string }>();
-    const { booking, isLoading } = useBooking(booking_id);
+    const location = useLocation();
+    
+    const isNonEmergency = location.pathname.includes("/bookings/schedule/");
+    const bookingType = isNonEmergency ? "non-emergency" : "emergency";
+    const { booking, isLoading, mutate } = useBooking(booking_id, bookingType);
+
+    const handleRefresh = useCallback(async () => {
+        await mutate();
+    }, [mutate]);
 
     if (isLoading) {
         return (
             <div className="w-full h-64 flex items-center justify-center">
                 <Spin size="large" />
-            </div>
-        );
-    }
-
-    if (!booking) {
-        return (
-            <div className="w-full p-6 text-center">
-                <p className="text-gray-500">Booking not found</p>
             </div>
         );
     }
@@ -48,7 +49,14 @@ const BookingDetailsLayouts: React.FC = () => {
                 </div>
                 <div className="col-span-1 lg:col-span-2">
                     <RequestTimeline booking={booking as any} />
-                    <InvoiceCard booking={booking as any} />
+                    <InvoiceCard 
+                        booking={booking as any} 
+                        bookingType={bookingType}
+                        onRefresh={handleRefresh}
+                        onSuccess={() => {
+                            // Optional additional callback
+                        }}
+                    />
                 </div>
             </div>
         </div>
