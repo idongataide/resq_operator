@@ -21,11 +21,16 @@ const AcceptBookingModal = ({
   open, 
   onClose, 
   booking, 
-  bookingType,
   onSuccess 
 }: AcceptBookingModalProps) => {
   const [selectedAmbulance, setSelectedAmbulance] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Determine booking type from the booking object itself
+  const actualBookingType = booking?.schedule_id ? "non-emergency" : "emergency";
+  
+  console.log("Booking Type", actualBookingType);
+
   
   // Fetch data based on booking type
   const { data: ambulancesLeads, isLoading: leadsLoading } = useAmbulanceLeadsSearch({
@@ -37,11 +42,16 @@ const AcceptBookingModal = ({
   const { mutate } = useSWRConfig();
 
   // Determine which data to use and which API call to make
-  const isEmergency = bookingType === "emergency";
+  const isEmergency = actualBookingType === "emergency";
   const ambulanceOptions = isEmergency ? ambulancesLeads : ambulances;
   const isLoading = isEmergency ? leadsLoading : ambulancesLoading;
 
   const handleAccept = async () => {
+    if (!booking) {
+      toast.error("Booking data not available");
+      return;
+    }
+
     const id = booking?.schedule_id || booking?.booking_id;
     if (!id) return;   
 
@@ -126,7 +136,7 @@ const AcceptBookingModal = ({
 
   return (
     <Modal
-      open={open}
+      open={open && !!booking}
       footer={null}
       onCancel={handleClose}
       centered

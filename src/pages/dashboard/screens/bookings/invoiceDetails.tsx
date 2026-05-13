@@ -30,7 +30,6 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
   
   const { data: feesData, isLoading: feesLoading } = useFees();
   
-  // Get the mutate function for this specific booking
   const bookingId = booking?.booking_id || booking?.schedule_id;
   const { mutate: mutateBooking } = useBooking(bookingId, bookingType);
 
@@ -40,31 +39,15 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
   const isEmergency = bookingType === "emergency";
   
   // Get payment status from booking data
-  // Adjust this based on your actual data structure
   const paymentStatus = booking?.payment_status === 1 || booking?.payment_status === "paid" ? "Paid" : "Pending";
   const isPaid = paymentStatus === "Paid";
   
   // Get payment method
   const paymentMethod = booking?.payment_method || "Not specified";
   
-  // Get payment date
-  const paymentDate = booking?.payment_date || booking?.updated_at || booking?.created_at;
-  
-  // Format date
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "Not available";
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  // Extract fees array from response
-  const feesList = feesData?.data || feesData || [];
+  // Extract fees array from response and filter only active fees (status === 1)
+  const allFees = feesData?.data || feesData || [];
+  const feesList = allFees.filter((fee: any) => fee.status === 1);
 
   // Get selected fee object
   const getSelectedFeeObject = (serviceId: string) => {
@@ -232,7 +215,6 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
             </div>
           )}
           
-          
           {/* Dynamic Service Items - Show invoices if exists, otherwise show selected fees */}
           {hasInvoices ? (
             // Display existing invoices
@@ -281,11 +263,6 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
           )}
         </div>
         
-        {/* Divider - only show if there are items */}
-        {(hasInvoices || selectedFees.length > 0) && (
-          <hr className="my-5 border-[#E4E7EC]" />
-        )}
-
         {/* Send Invoice Button - Only show for non-emergency without existing invoices */}
         {showSendButton && (
           <div className="flex justify-center mt-6">
@@ -409,7 +386,7 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
               </div>
             ) : (
               <div className="text-center py-8 text-gray-400">
-                No services available
+                No active services available
               </div>
             )}
           </div>

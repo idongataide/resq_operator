@@ -113,7 +113,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ booking }) => {
                 {booking.customer_data?.full_name || 'N/A'}
               </h2>
               
-              {operationStatus === 1 || operationStatus === 2  && (
+              {(operationStatus === 0 || operationStatus  === 1 || operationStatus === 2)  && (
                 <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
                   <Button 
                     icon={<FaEnvelope />} 

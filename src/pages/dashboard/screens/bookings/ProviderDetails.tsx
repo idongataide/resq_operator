@@ -84,7 +84,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
               <FiUser className="w-4 h-4 sm:w-5 sm:h-5 text-[#808D97] mt-1 flex-shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="text-[#808D97] text-xs sm:text-sm">Provider Name</p>
-                <p className="font-medium text-[#000A0F] break-words">{providerDetails.providerName}</p>
+                <p className="font-medium text-[#000A0F] break-words capitalize">{providerDetails.providerName}</p>
               </div>
             </div>
 
@@ -102,7 +102,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
               <FiCalendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#808D97] mt-1 flex-shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="text-[#808D97] text-xs sm:text-sm">Approval Date & Time</p>
-                <p className="font-medium text-[#000A0F] break-words">{providerDetails.approvalDate}</p>
+                <p className="font-medium text-[#000A0F] break-words capitalize">{providerDetails.approvalDate}</p>
               </div>
             </div>
 
@@ -129,7 +129,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
               <FiUserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-[#808D97] mt-1 flex-shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="text-[#808D97] text-xs sm:text-sm">Ambulance Lead Name</p>
-                <p className="font-medium text-[#000A0F] break-words">{providerDetails.ambulanceLead}</p>
+                <p className="font-medium text-[#000A0F] break-words capitalize">{providerDetails.ambulanceLead}</p>
               </div>
             </div>
           </div>
@@ -141,7 +141,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
                 <FaPen className="w-3 h-3 sm:w-4 sm:h-4 text-[#808D97] flex-shrink-0" />
                 <p className="text-xs sm:text-sm text-[#354959] font-medium">Approval Reasons</p>
               </div>
-              <p className="text-xs sm:text-sm text-[#000A0F] leading-relaxed break-words">
+              <p className="text-xs sm:text-sm text-[#000A0F] leading-relaxed break-words capitalize">
                 {providerDetails.approvalReasons}
               </p>
             </div>

@@ -194,6 +194,12 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
     booking.booking_id?.includes(searchText)
   );
 
+  const getBookingActualType = (record: Booking): "emergency" | "non-emergency" => {
+  // Check if it has schedule_id (non-emergency) or not (emergency)
+  // Or check some other field that distinguishes them
+  return record.schedule_id ? "non-emergency" : "emergency";
+};
+
   // Action menu for each row
   const actionMenu = (record: Booking) => (
     <Menu>
@@ -292,15 +298,6 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
     ),
   }] : []),
   
-  {
-    title: "Payment Method",
-    dataIndex: "payment_method",
-    key: "payment_method",
-    render: (text: string) => {
-      if (!text) return 'N/A';
-      return text.charAt(0).toUpperCase() + text.slice(1);
-    },
-  },
   {
     title: "Status",
     key: "status",
@@ -448,9 +445,9 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
       onClose={() => {
         setAcceptOpen(false);
         setSelectedBookingForAccept(null);
-      }}
+      }}      
       booking={selectedBookingForAccept}
-      bookingType={bookingType}  // ← Add this line
+      bookingType={selectedBookingForAccept ? getBookingActualType(selectedBookingForAccept) : undefined}
       onSuccess={() => {
         mutate();
       }}

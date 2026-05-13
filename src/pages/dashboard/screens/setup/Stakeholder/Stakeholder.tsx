@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Table, Button, Input } from "antd";
+import type { ColumnType } from "antd/es/table";
 import { 
   SearchOutlined, 
   FilterOutlined, 
@@ -26,6 +27,7 @@ interface Stakeholder {
   amount: number;
   amount_sufix: string;
   amount_type: 'percentage' | 'amount';
+  status: number; // 0: Pending, 1: Approved, 2: Cancelled
   createdAt: string;
   updatedAt: string;
 }
@@ -40,6 +42,7 @@ interface StakeholderDisplay {
   bank_code: string;
   amount: number;
   amount_type: 'percentage' | 'amount';
+  status: number;
   createdAt: string;
 }
 
@@ -65,6 +68,7 @@ const StakeholderDisbursementTable = () => {
       bank_code: item.bank_data?.bank_code || 'N/A',
       amount: item.amount,
       amount_type: item.amount_type,
+      status: item.status || 0, // Default to Pending if status not provided
       createdAt: item.createdAt,
     }));
   }, [stakeholders]);
@@ -75,6 +79,40 @@ const StakeholderDisbursementTable = () => {
       return `${amount}%`;
     } else {
       return `₦${amount.toLocaleString()}`;
+    }
+  };
+
+  // Get status badge configuration
+  const getStatusConfig = (status: number) => {
+    switch (status) {
+      case 0:
+        return { 
+          text: 'Pending', 
+          color: '#BB7F05', 
+          bg: '#FFF7E8',
+          dotColor: '#BB7F05'
+        };
+      case 1:
+        return { 
+          text: 'Approved', 
+          color: '#4EA507', 
+          bg: '#E8F5E9',
+          dotColor: '#4EA507'
+        };
+      case 2:
+        return { 
+          text: 'Cancelled', 
+          color: '#DE3631', 
+          bg: '#FDF5F5',
+          dotColor: '#DE3631'
+        };
+      default:
+        return { 
+          text: 'Unknown', 
+          color: '#666666', 
+          bg: '#F5F5F5',
+          dotColor: '#666666'
+        };
     }
   };
 
@@ -128,8 +166,15 @@ const StakeholderDisbursementTable = () => {
     }));
   }, [transformedData]);
 
+  // Generate status filters
+  const statusFilters = [
+    { text: 'Pending', value: '0' },
+    { text: 'Approved', value: '1' },
+    { text: 'Cancelled', value: '2' },
+  ];
+
   // Table columns
-  const columns = [
+  const columns: ColumnType<StakeholderDisplay>[] = [
     {
       title: "Name",
       dataIndex: "name",
@@ -153,6 +198,7 @@ const StakeholderDisbursementTable = () => {
       dataIndex: "bank_name",
       key: "bank_name",
       filters: bankFilters,
+      onFilter: (value: any, record: StakeholderDisplay) => record.bank_name === value,
     },
     {
       title: "Value",
@@ -164,6 +210,28 @@ const StakeholderDisbursementTable = () => {
           {formatAmount(record.amount, record.amount_type)}
         </span>
       ),
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      filters: statusFilters,
+      onFilter: (value: any, record: StakeholderDisplay) => record.status === parseInt(String(value)),
+      render: (status: number) => {
+        const config = getStatusConfig(status);
+        return (
+          <span
+            className="px-3 py-1 rounded-md text-sm font-medium inline-flex items-center gap-2"
+            style={{ backgroundColor: config.bg, color: config.color }}
+          >
+            <span 
+              className="w-2 h-2 rounded-full" 
+              style={{ backgroundColor: config.dotColor }}
+            />
+            {config.text}
+          </span>
+        );
+      },
     },
     {
       title: "Action",
@@ -247,15 +315,6 @@ const StakeholderDisbursementTable = () => {
           className="border-none p-3"
           rowClassName="hover:bg-gray-50 transition-colors"
         />
-
-        {/* Footer with time and date */}
-        <div className="px-6 py-3 border-t border-gray-200 bg-white flex justify-between items-center text-sm text-[#808D97]">
-          <div>Type here to search</div>
-          <div className="flex items-center gap-4">
-            <span>{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
-            <span>{new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}</span>
-          </div>
-        </div>
       </div>
 
       {/* Add Stakeholder Modal */}
