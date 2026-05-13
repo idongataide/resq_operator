@@ -22,7 +22,7 @@ const AcceptBookingModal = ({ open, onClose, booking, onSuccess }: AcceptBooking
   
   // Fetch only available ambulances (not on trip)
   const { data: ambulancesLeads, isLoading: ambulancesLoading } = useAmbulanceLeadsSearch({
-    online: 'no',
+    // online: 'no',
     type: 'lead',
   });
   

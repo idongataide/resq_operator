@@ -113,14 +113,18 @@ const UserProfile: React.FC<UserProfileProps> = ({ booking }) => {
                 {booking.customer_data?.full_name || 'N/A'}
               </h2>
               
-              {/* Show Accept/Reject buttons only if operation_status is 0 */}
-              {operationStatus === 0 && (
+              {operationStatus === 1 || operationStatus === 2  && (
                 <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
                   <Button 
                     icon={<FaEnvelope />} 
                     className="rounded-lg flex bg-[#FDF6F6]! text-[#DB4A47]! border-0! items-center"
                     size="large"
                     onClick={() => window.location.href = `mailto:${booking.user_data?.email || ''}`}
+                  />
+                  <Button 
+                    className="rounded-xl px-3 py-2 bg-[#FDF6F6]! border-0! flex-1 sm:flex-none"
+                    icon={<FaPhone className="w-4 h-4 text-[#DB4A47]!" />}
+                    onClick={() => window.location.href = `tel:${booking.customer_data?.customer_phone || booking.phone_number}`}
                   />
                   <Button 
                     icon={<AiOutlineStop />} 
@@ -132,7 +136,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ booking }) => {
                   </Button>
                   <Button 
                     type='primary' 
-                    className="text-white rounded-xl px-4 py-2 flex items-center gap-2 flex-1 sm:flex-none justify-center"
+                    size="large"
+                    className="text-white rounded-xl px-4 py-3! flex items-center gap-2 flex-1 sm:flex-none justify-center"
                     icon={<LuCheckCheck className="w-4 h-4" />}
                     onClick={() => setIsAcceptModalOpen(true)}
                   >
@@ -141,13 +146,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ booking }) => {
                 </div>
               )}
 
-              <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
-                <Button 
-                  className="rounded-xl px-3 py-2 bg-[#FDF6F6] flex-1 sm:flex-none"
-                  icon={<FaPhone className="w-4 h-4 text-[#DB4A47]" />}
-                  onClick={() => window.location.href = `tel:${booking.customer_data?.customer_phone || booking.phone_number}`}
-                />                
-                {operationStatus !== 0 && (
+                {operationStatus === 3 && (
+              <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">                                
                   <Button 
                     type='primary' 
                     className="text-white rounded-xl px-4 py-2 flex items-center gap-2 flex-1 sm:flex-none justify-center"
@@ -156,8 +156,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ booking }) => {
                   >
                     Chat with User
                   </Button>
-                )}
               </div>
+                )}
             </div>
 
             <div className="border-t border-gray-200 my-4" />
