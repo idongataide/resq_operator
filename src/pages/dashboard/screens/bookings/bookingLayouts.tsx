@@ -7,16 +7,18 @@ import BookingList from "./bookingList";
 const BookingLayouts: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-const getActiveKey = () => {
-if (location.pathname === "/bookings") return "emergency";
-if (location.pathname === "/bookings/non-emergency") return "non-emergency";
-return "all";
-};
-
-
-  const isNonEmergency = location.pathname.includes("/bookings/schedule/");
-  const bookingType = isNonEmergency ? "non-emergency" : "emergency";
+  
+  const getActiveKey = () => {
+    if (location.pathname === "/bookings/emergency") return "emergency";
+    if (location.pathname === "/bookings/non-emergency") return "non-emergency";
+    return "all";
+  };
+  
+  const getBookingType = () => {
+    if (location.pathname === "/bookings/") return "emergency";
+    if (location.pathname === "/bookings/non-emergency") return "non-emergency";
+    return "all";
+  };
   
   const handleTabChange = (key: string) => {
     if (key === "non-emergency") {
@@ -49,7 +51,7 @@ return "all";
           tabBarStyle={{ marginBottom: 14 }}
           tabBarGutter={12}
         />
-        <BookingList bookingType={bookingType} />
+        <BookingList bookingType={getBookingType()} />
       </div>
     </div>
   );
