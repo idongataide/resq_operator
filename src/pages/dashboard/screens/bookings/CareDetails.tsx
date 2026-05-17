@@ -134,7 +134,7 @@ const CareDetails: React.FC<CareDetailsProps> = ({ booking }) => {
               <div className="w-6 h-6 flex items-center justify-center rounded-md bg-red-100">
                 <FiCamera className="w-4 h-4 text-[#DB4A47]" />
               </div>
-              <h3 className="text-base font-semibold text-[#000A0F]">Pre Treatment Documentation</h3>
+              <h3 className="text-base font-semibold text-[#000A0F]">Pre Treatment Photos</h3>
             </div>
             
             <ImageGallery images={preCareImages} type="pre" />
@@ -157,7 +157,7 @@ const CareDetails: React.FC<CareDetailsProps> = ({ booking }) => {
               <div className="w-6 h-6 flex items-center justify-center rounded-md bg-red-100">
                 <FiCamera className="w-4 h-4 text-[#DB4A47]" />
               </div>
-              <h3 className="text-base font-semibold text-[#000A0F]">Post Treatment Documentation</h3>
+              <h3 className="text-base font-semibold text-[#000A0F]">Post Treatment Photos</h3>
             </div>
             
             <ImageGallery images={postCareImages} type="post" />
