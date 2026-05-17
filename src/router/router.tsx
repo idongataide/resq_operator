@@ -17,6 +17,7 @@ import AmbulanceLayouts from "@/pages/dashboard/screens/ambulances/AmbulanceLayo
 import AmbulanceLeadLayout from "@/pages/dashboard/screens/ambulances_lead/AmbulanceLeadLayouts";
 import ActivityLog from "@/pages/dashboard/screens/activity-log/activityLog";
 import BookingDetailsLayouts from "@/pages/dashboard/screens/bookings/bookingDetailsLayouts";
+import BookingList from "@/pages/dashboard/screens/bookings/bookingList";
 
 const DashboadScreen = lazy(() =>
   import("../pages/dashboard/screens/dashboardScreen/DashboadScreen")
@@ -73,6 +74,10 @@ export const routes = createBrowserRouter([
           {
             path: "non-emergency",
             element: <BookingLayouts />,  
+          },
+          {
+            path: "incoming-request",
+            element: <BookingList bookingType="emergency" />,  
           },
           {
             path: "schedule/:booking_id",

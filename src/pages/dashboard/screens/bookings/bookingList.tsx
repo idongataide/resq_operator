@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Table, Button, Input, Dropdown, Menu, Modal } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 import { 
   SearchOutlined, 
   FilterOutlined, 
@@ -56,7 +57,14 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
   const [reason, setReason] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const { data: bookings, isLoading, mutate } = useBookings(bookingType);
+  const location = useLocation();
+  const effectiveBookingType = location.pathname === "/bookings/incoming-request" 
+    ? "new-pending" 
+    : bookingType;
+
+  const { data: bookings, isLoading, mutate } = useBookings(effectiveBookingType);
+
+  // const { data: bookings, isLoading, mutate } = useBookings(bookingType);
   const [selectedBookingForAccept, setSelectedBookingForAccept] = useState<Booking | null>(null);
 
   // Check if it's emergency booking
@@ -334,8 +342,7 @@ const BookingList: React.FC<BookingListProps> = ({ bookingType }) => {
 ];
 
   return (
-    <div className="p-2 bg-white min-h-screen rounded-2xl">
-      <div className="bg-white rounded-xl overflow-hidden">
+    <div className={`${effectiveBookingType === "new-pending" ? "px-6 py-4" : "p-2"} bg-white min-h-screen rounded-2xl`}>      <div className="bg-white rounded-xl overflow-hidden">
         {/* Header with Search and Filter */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

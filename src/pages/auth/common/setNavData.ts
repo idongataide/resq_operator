@@ -2,7 +2,7 @@ interface iData {
   data?: {
     token?: string;
     email?: string;
-    full_name?: string;
+    name?: string;
     user_type?: string;
     avatar?: string;
     account_status?: number;
@@ -32,7 +32,7 @@ interface iNavPath {
   ) => {
     if (!res?.data) return;
 
-    const fullName = res.data.full_name || "";
+    const fullName = res.data.name || "";
     const nameParts = fullName.split(" ");
 
     navPath.setNavPath(screenPath);

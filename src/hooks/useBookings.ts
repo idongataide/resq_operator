@@ -3,11 +3,17 @@ import { getBookings, getBookingCounts, getBookingById } from  "@/api/bookingsAp
 
 
 export const useBookings = (booking_type?: string) => {
-  const swrKey = booking_type === "non-emergency"
-    ? `/bookings/schedules`
-    : "/bookings";
+  // Determine the endpoint based on booking_type
+  let endpoint = "/bookings";
+  
+  if (booking_type === "non-emergency") {
+    endpoint = "/bookings/schedules";
+  } else if (booking_type === "new-pending") {
+    endpoint = "/bookings/new-pending";
+  }
+  
   const { data, isLoading, mutate } = useSWR(
-    swrKey,
+    endpoint,
     () => getBookings(booking_type),
     {
       revalidateOnFocus: false,

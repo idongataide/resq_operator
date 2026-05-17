@@ -1,8 +1,17 @@
 import { axiosAPIInstance } from "./interceptor";
 
+
+
 export const getBookings = async (booking_type?: string) => {
   try {
-    const endpoint = booking_type === "non-emergency" ? "/bookings/schedules" : "/bookings";
+    let endpoint = "/bookings";
+    
+    if (booking_type === "non-emergency") {
+      endpoint = "/bookings/schedules";
+    } else if (booking_type === "new-pending") {
+      endpoint = "/bookings/new-pending";
+    }
+    
     return await axiosAPIInstance
       .get(endpoint)
       .then((res) => {
@@ -12,6 +21,7 @@ export const getBookings = async (booking_type?: string) => {
     return error;
   }
 };
+
 
 // Get booking counts
 export const getBookingCounts = async () => {

@@ -26,6 +26,9 @@ interface StoreState {
     email: string;
     setEmail: (email: string) => void;
 
+    name: string;
+    setName  : (name: string) => void;
+
     role: string;
     setRole: (role: string) => void;
 
@@ -102,6 +105,8 @@ const myMiddlewares = <T,>(
 
             email: "",
             setEmail: (email: string) => set({ email }),
+            name: "",
+            setName: (name: string) => set({ name }),
             role: "",
             setRole: (role: string) => set({ role }),
             userName: "",

@@ -122,6 +122,11 @@ const ProvidersList = () => {
       key: "reg_number",
     },
     {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
       title: "Phone",
       dataIndex: "phone_number",
       key: "phone_number",

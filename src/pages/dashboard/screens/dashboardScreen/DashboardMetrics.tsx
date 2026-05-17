@@ -2,10 +2,10 @@ import Images from "@/components/images";
 import { useBookingCounts } from "@/hooks/useBookings";
 import React, { useState, useEffect } from "react";
 import { Spin } from "antd";
+import { Link } from "react-router-dom";
+
 
 type Period = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'all';
-
-
 
 const DashboardMetrics: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('yearly');
@@ -104,132 +104,160 @@ const DashboardMetrics: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#FFFFFF] p-6 rounded-2xl">
-      <div className="mb-3 flex justify-between items-center">
-        <h3 className="text-[#000A0F] font-bold uppercase">OverView</h3>
-        
-        {/* Filter Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#D0D5DD] rounded-lg shadow-sm hover:bg-gray-50"
-          >
-            <span className="text-sm text-[#344054] font-medium">Filter</span>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12.6667 6L8 10.6667L3.33333 6" stroke="#667085" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Left Section: Overview Metrics */}
+      <div className="flex-1 bg-[#FFFFFF] p-6 rounded-2xl">
+        <div className="mb-3 flex justify-between items-center">
+          <h3 className="text-[#000A0F] font-bold uppercase">OverView</h3>
+          
+          {/* Filter Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#D0D5DD] rounded-lg shadow-sm hover:bg-gray-50"
+            >
+              <span className="text-sm text-[#344054] font-medium">Filter</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.6667 6L8 10.6667L3.33333 6" stroke="#667085" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
 
-          {isFilterOpen && (
-            <>
-              {/* Backdrop */}
-              <div 
-                className="fixed inset-0 z-40"
-                onClick={() => setIsFilterOpen(false)}
-              />
-              
-              {/* Dropdown */}
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-[#EAECF0] z-50 overflow-hidden">
-                <div className="p-5">
-                  <h3 className="text-lg font-semibold text-[#101828] mb-4">Filter</h3>
-                  
-                  {/* Filter Options */}
-                  <div className="space-y-2 mb-6">
-                    {filterOptions.map((option) => (
-                      <button
-                        key={option.id}
-                        className="w-full text-left px-3 py-2.5 text-sm text-[#344054] hover:bg-[#F9FAFB] rounded-lg transition-colors"
-                        onClick={() => handleFilterSelect(option)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
+            {isFilterOpen && (
+              <>
+                {/* Backdrop */}
+                <div 
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsFilterOpen(false)}
+                />
+                
+                {/* Dropdown */}
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-[#EAECF0] z-50 overflow-hidden">
+                  <div className="p-5">
+                    <h3 className="text-lg font-semibold text-[#101828] mb-4">Filter</h3>
+                    
+                    {/* Filter Options */}
+                    <div className="space-y-2 mb-6">
+                      {filterOptions.map((option) => (
+                        <button
+                          key={option.id}
+                          className="w-full text-left px-3 py-2.5 text-sm text-[#344054] hover:bg-[#F9FAFB] rounded-lg transition-colors"
+                          onClick={() => handleFilterSelect(option)}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
 
-                  {/* Custom Range Section */}
-                  <div className="border-t border-[#EAECF0] pt-4 mb-6">
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-medium text-[#344054] mb-1.5">
-                          Start Time
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            placeholder="Select Start Time"
-                            className="w-full px-3 py-2.5 text-sm border border-[#D0D5DD] rounded-lg placeholder:text-[#667085] focus:outline-none focus:ring-1 focus:ring-[#E86229] focus:border-[#E86229]"
-                            readOnly
-                          />
-                          <svg className="absolute right-3 top-1/2 -translate-y-1/2" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12.6667 6L8 10.6667L3.33333 6" stroke="#667085" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
+                    {/* Custom Range Section */}
+                    <div className="border-t border-[#EAECF0] pt-4 mb-6">
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-medium text-[#344054] mb-1.5">
+                            Start Time
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              placeholder="Select Start Time"
+                              className="w-full px-3 py-2.5 text-sm border border-[#D0D5DD] rounded-lg placeholder:text-[#667085] focus:outline-none focus:ring-1 focus:ring-[#E86229] focus:border-[#E86229]"
+                              readOnly
+                            />
+                            <svg className="absolute right-3 top-1/2 -translate-y-1/2" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M12.6667 6L8 10.6667L3.33333 6" stroke="#667085" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-[#344054] mb-1.5">
-                          End Time
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            placeholder="Select End Time"
-                            className="w-full px-3 py-2.5 text-sm border border-[#D0D5DD] rounded-lg placeholder:text-[#667085] focus:outline-none focus:ring-1 focus:ring-[#E86229] focus:border-[#E86229]"
-                            readOnly
-                          />
-                          <svg className="absolute right-3 top-1/2 -translate-y-1/2" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12.6667 6L8 10.6667L3.33333 6" stroke="#667085" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
+                        <div>
+                          <label className="block text-xs font-medium text-[#344054] mb-1.5">
+                            End Time
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              placeholder="Select End Time"
+                              className="w-full px-3 py-2.5 text-sm border border-[#D0D5DD] rounded-lg placeholder:text-[#667085] focus:outline-none focus:ring-1 focus:ring-[#E86229] focus:border-[#E86229]"
+                              readOnly
+                            />
+                            <svg className="absolute right-3 top-1/2 -translate-y-1/2" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M12.6667 6L8 10.6667L3.33333 6" stroke="#667085" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => setIsFilterOpen(false)}
-                      className="flex-1 px-4 py-2.5 text-sm font-medium text-[#344054] bg-white border border-[#D0D5DD] rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => setIsFilterOpen(false)}
-                      className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-[#E86229] rounded-lg hover:bg-[#d54d1f] transition-colors"
-                    >
-                      Apply
-                    </button>
+                    {/* Action Buttons */}
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setIsFilterOpen(false)}
+                        className="flex-1 px-4 py-2.5 text-sm font-medium text-[#344054] bg-white border border-[#D0D5DD] rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => setIsFilterOpen(false)}
+                        className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-[#E86229] rounded-lg hover:bg-[#d54d1f] transition-colors"
+                      >
+                        Apply
+                      </button>
+                    </div>
                   </div>
                 </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          {metrics.map((metric) => (
+            <div 
+              key={metric.id} 
+              className="rounded-xl p-3 border border-[#F2F4F7] flex flex-col"
+              style={{ backgroundColor: metric.bgColor }}
+            >
+              <div className="flex items-center p-3 bg-white rounded-full w-max mb-4">
+                <img 
+                  src={Images.icon?.siren} 
+                  alt={`${metric.title} icon`} 
+                  className="h-5 w-5"
+                />
               </div>
-            </>
-          )}
+              <p className="text-sm text-[#354959] mb-2">{metric.title}</p>
+              <h2 className="text-xl font-semibold text-[#354959]">
+                {isLoading ? (
+                  <Spin size="small" />
+                ) : (
+                  metric.value
+                )}
+              </h2>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-        {metrics.map((metric) => (
-          <div 
-            key={metric.id} 
-            className="rounded-xl p-3 border border-[#F2F4F7] flex flex-col"
-            style={{ backgroundColor: metric.bgColor }}
-          >
-            <div className="flex items-center p-3 bg-white rounded-full w-max mb-4">
-              <img 
-                src={Images.icon?.siren} 
-                alt={`${metric.title} icon`} 
-                className="h-5 w-5"
-              />
-            </div>
-            <p className="text-sm text-[#354959] mb-2">{metric.title}</p>
-            <h2 className="text-xl font-semibold text-[#354959]">
-              {isLoading ? (
-                <Spin size="small" />
-              ) : (
-                metric.value
-              )}
-            </h2>
+      {/* Right Section: Incoming Requests Card */}
+      <div className="lg:w-80 bg-[#FFFFFF] p-6 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden">
+        {/* Animated Circles Background */}
+        <div className="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+          <div className="absolute w-12 h-12 rounded-full bg-[#FEE4D6] animate-ping opacity-75" style={{ animationDuration: '2s' }}></div>
+          <div className="absolute w-28 h-28 rounded-full bg-[#FEE4D6] animate-ping opacity-50" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}></div>
+          <div className="absolute w-34 h-34 rounded-full bg-[#FEE4D6] animate-ping opacity-25" style={{ animationDuration: '3s', animationDelay: '1s' }}></div>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-30 text-center">
+          <h3 className="text-[#000A0F] font-bold uppercase mb-6 text-left">INCOMING REQUESTS</h3>
+          
+          {/* Large Number with its own subtle pulse */}
+          <div className="mb-4">
+            <span className="text-5xl font-semibold text-[#000A0F]">02</span>
           </div>
-        ))}
+          
+          <p className="text-[#354959] mb-6">View Requests</p>
+          
+          <Link to="/bookings/incoming-request" className="text-[#DB4A47] no-underline">View Requests</Link>
+
+        </div>
       </div>
     </div>
   );

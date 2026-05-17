@@ -190,7 +190,7 @@ const DashboardLayout: React.FC = () => {
                           className="w-12 h-12 rounded-full object-cover"
                         />
                         <div className="flex-1">
-                          <p className="text-sm font-semibold text-[#344054]">
+                          <p className="text-sm font-semibold text-[#344054] capitalize">
                             {datas?.firstName} {datas?.lastName}
                           </p>
                           <p className="text-xs text-[#667085] mt-1">
