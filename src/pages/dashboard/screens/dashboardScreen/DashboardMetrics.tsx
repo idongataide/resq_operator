@@ -236,7 +236,7 @@ const DashboardMetrics: React.FC = () => {
       </div>
 
       {/* Right Section: Incoming Requests Card */}
-      <div className="lg:w-80 bg-[#FFFFFF] p-6 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden">
+      <div className="lg:w-70 bg-[#FFFFFF] p-6 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden">
         {/* Animated Circles Background */}
         <div className="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
           <div className="absolute w-12 h-12 rounded-full bg-[#FEE4D6] animate-ping opacity-75" style={{ animationDuration: '2s' }}></div>
@@ -250,7 +250,7 @@ const DashboardMetrics: React.FC = () => {
           
           {/* Large Number with its own subtle pulse */}
           <div className="mb-4">
-            <span className="text-5xl font-semibold text-[#000A0F]">02</span>
+            <span className="text-5xl font-medium text-[#000A0F]">02</span>
           </div>
           
           <p className="text-[#354959] mb-6">View Requests</p>
