@@ -1,4 +1,5 @@
-
+// components/requestDetails.tsx
+import { useState } from "react";
 import {
   FiCalendar,
   FiPhone,
@@ -9,12 +10,16 @@ import {
   FiEdit,
   FiChevronUp,
 } from "react-icons/fi";
+import { Button } from "antd";
+import UpdateLocationModal from "./UpdateLocationModal";
 
 interface RequestDetailsProps {
   booking: any; 
+  bookingType?: string;
 }
 
-const RequestDetails: React.FC<RequestDetailsProps> = ({ booking }) => {
+const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Format date function
   const formatDate = (dateString: string) => {
@@ -51,6 +56,15 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking }) => {
           </div>
 
           <div className="flex items-center gap-4">
+            <Button
+              type="text"
+              onClick={() => setIsModalOpen(true)}
+              className="text-[#DB4A47]! flex items-center font-medium! gap-2"
+            >
+              <FiEdit className="w-4 h-4 text-[#DB4A47]" />
+              Update Location
+            </Button>
+
             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
               <FiChevronUp className="w-4 h-4 text-[#DB4A47]" />
             </div>
@@ -84,27 +98,45 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking }) => {
               <div className="flex items-start gap-3">
                 <FiMapPin className="w-4 h-4 text-[#808D97] mt-1" />
                 <div>
-                  <p className="text-[#808D97]">Landmark</p>
+                  <p className="text-[#808D97]">Pickup Address</p>
                   <p className="font-medium text-[#000A0F]">
                     {booking.start_address || "N/A"}
                   </p>
                 </div>
               </div>
-
+              {booking.emergency_booking_type === "sos" && (
+                <>
+              <div className="flex items-start gap-3">
+                <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
+                <div>
+                  <p className="text-[#808D97]">Landmark</p>
+                  <p className="font-medium text-[#000A0F]">
+                    {booking.user_data?.landmark || "N/A"}
+                  </p>
+                </div>
+              </div>
               <div className="flex items-start gap-3">
                 <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
                 <div>
                   <p className="text-[#808D97]">Apartment Direction</p>
                   <p className="font-medium text-[#000A0F]">
-                    {booking.start_coord?.latitude && booking.start_coord?.longitude
-                      ? `${booking.start_coord.latitude.toFixed(4)}, ${booking.start_coord.longitude.toFixed(4)}`
-                      : "N/A"}
+                    {booking.user_data?.house_description || "N/A"}
                   </p>
                 </div>
               </div>
+              </>)}
             </div>
 
             <div className="space-y-6">
+              <div className="flex items-start gap-3">
+                <FiPhone className="w-4 h-4 text-[#808D97] mt-1" />
+                <div>
+                  <p className="text-[#808D97]">Request Type</p>
+                  <p className="font-medium text-[#000A0F]">
+                    {bookingType === "non-emergency" ? "Non-Emergency" : "Emergency"}
+                  </p>
+                </div>
+              </div>
               <div className="flex items-start gap-3">
                 <FiPhone className="w-4 h-4 text-[#808D97] mt-1" />
                 <div>
@@ -135,7 +167,7 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking }) => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
+              {/* <div className="flex items-start gap-3">
                 <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
                 <div>
                   <p className="text-[#808D97]">Dropoff Coordinates</p>
@@ -145,7 +177,7 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking }) => {
                       : "N/A"}
                   </p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -162,7 +194,18 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking }) => {
         </div>
       </div>
 
-      
+      {/* Update Location Modal */}
+      <UpdateLocationModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        bookingId={booking.booking_id}
+        initialData={{
+          pickup_address: booking.start_address,
+          dropoff_address: booking.end_address,
+          start_coord: booking.start_coord,
+          end_coord: booking.end_coord,
+        }}
+      />
     </>
   );
 };

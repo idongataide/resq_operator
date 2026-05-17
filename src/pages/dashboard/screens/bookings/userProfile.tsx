@@ -20,7 +20,7 @@ interface UserProfileProps {
   booking: any;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({ booking }) => {
+const UserProfile: React.FC<UserProfileProps> =  ({ booking, bookingType }) => {
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [reason, setReason] = useState("");
@@ -111,6 +111,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ booking }) => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <h2 className="text-xl sm:text-2xl font-semibold text-[#000A0F]">
                 {booking.customer_data?.full_name || 'N/A'}
+                <span 
+                    className="inline-flex items-center bg-[#FDF5F5] text-[#DE3631] px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap"                    
+                  >
+                    <span 
+                      className="w-2 h-2 rounded-full mr-1 bg-[#DE3631]"/>
+                     {bookingType === "non-emergency" ? "Non-Emergency Booking" : "Emergency Booking"}
+                     {booking.emergency_booking_type === "sos" && " (SOS)"}
+                 </span>
               </h2>
               
               {(operationStatus === 0 || operationStatus  === 1 || operationStatus === 2)  && (
