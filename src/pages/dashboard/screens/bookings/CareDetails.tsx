@@ -9,7 +9,6 @@ import {
   FiChevronRight
 } from "react-icons/fi";
 
-
 interface CareDetailsProps {
   booking: any;
 }
@@ -23,9 +22,12 @@ const CareDetails: React.FC<CareDetailsProps> = ({ booking }) => {
 
   // Extract data from booking
   const preCareImages = booking?.pre_care_doc?.images || [];
+  const preCareNote = booking?.pre_care_doc?.note || "No note provided";
   const postCareImages = booking?.post_care_doc?.images || [];
+  const postCareNote = booking?.post_care_doc?.note || "No note provided";
   const diagnosis = booking?.treatment_doc?.diagnosis || "No diagnosis provided";
   const treatment = booking?.treatment_doc?.treatments || "No treatment provided";
+  const medicationGiven = booking?.treatment_doc?.medication_given || "No medication provided";
   const handoffNote = booking?.handover_note || "No handoff note provided";
 
   const openImageModal = (images: string[], index: number, type: 'pre' | 'post') => {
@@ -132,20 +134,20 @@ const CareDetails: React.FC<CareDetailsProps> = ({ booking }) => {
               <div className="w-6 h-6 flex items-center justify-center rounded-md bg-red-100">
                 <FiCamera className="w-4 h-4 text-[#DB4A47]" />
               </div>
-              <h3 className="text-base font-semibold text-[#000A0F]">Pre Treatment Photos</h3>
+              <h3 className="text-base font-semibold text-[#000A0F]">Pre Treatment Documentation</h3>
             </div>
             
             <ImageGallery images={preCareImages} type="pre" />
 
-            {/* Diagnosis */}
-            <div className="bg-[#F5F6F7] rounded-xl p-5">
+            {/* Pre Treatment Note */}
+            <div className="bg-[#F5F6F7] rounded-xl p-5 mb-4">
               <div className="flex items-center gap-2 mb-2">
                 <FiFileText className="w-4 h-4 text-[#354959]" />
-                <p className="text-[#354959] font-medium">Diagnosis</p>
+                <p className="text-[#354959] font-medium">Note</p>
               </div>
               <p className="text-sm text-[#000A0F] leading-relaxed">
-                {diagnosis}
-              </p>           
+                {preCareNote}
+              </p>
             </div>
           </div>
 
@@ -155,19 +157,44 @@ const CareDetails: React.FC<CareDetailsProps> = ({ booking }) => {
               <div className="w-6 h-6 flex items-center justify-center rounded-md bg-red-100">
                 <FiCamera className="w-4 h-4 text-[#DB4A47]" />
               </div>
-              <h3 className="text-base font-semibold text-[#000A0F]">Post Treatment Photos</h3>
+              <h3 className="text-base font-semibold text-[#000A0F]">Post Treatment Documentation</h3>
             </div>
             
             <ImageGallery images={postCareImages} type="post" />
 
-            {/* Treatment */}
-            <div className="bg-[#F5F6F7] rounded-xl p-5">
+            {/* Post Treatment Note */}
+            <div className="bg-[#F5F6F7] rounded-xl p-5 mb-4">
               <div className="flex items-center gap-2 mb-2">
                 <FiFileText className="w-4 h-4 text-[#354959]" />
-                <p className="text-[#354959] font-medium">Treatment</p>
+                <p className="text-[#354959] font-medium">Note</p>
               </div>
               <p className="text-sm text-[#000A0F] leading-relaxed">
+                {postCareNote}
+              </p>
+            </div>
+          </div>
+
+          {/* Treatment Documentation Section - Full Width */}
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-2 mb-4">           
+              <h3 className="text-base font-semibold text-[#000A0F]">Treatment Documentation</h3>
+            </div>            
+            <div className="bg-[#F5F6F7] rounded-xl p-5">
+              <h3 className="text-sm font-semibold text-[#354959] mb-2">Diagnosis</h3>
+              <p className="text-sm text-[#000A0F] leading-relaxed">
+                {diagnosis}
+              </p>
+            </div>
+            <div className="bg-[#F5F6F7] rounded-xl p-5 mt-3">
+              <h3 className="text-sm font-semibold text-[#354959] mb-2">Treatment</h3>
+              <p className="text-sm text-[#000A0F] leading-relaxed">
                 {treatment}
+              </p>
+            </div>
+            <div className="bg-[#F5F6F7] rounded-xl p-5 mt-3">
+              <h3 className="text-sm font-semibold text-[#354959] mb-2">Medication Given</h3>
+              <p className="text-sm text-[#000A0F] leading-relaxed">
+                {medicationGiven}
               </p>
             </div>
           </div>
