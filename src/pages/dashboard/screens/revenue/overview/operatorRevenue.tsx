@@ -118,6 +118,7 @@ const OperatorRevenue = () => {
 
   return (
     <>
+      <p className="mb-4">Manage incoming requests for customer emergency booking</p>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {/* Header with Filter and Add New */}
         <div className="p-6 py-4 border-b border-gray-200">

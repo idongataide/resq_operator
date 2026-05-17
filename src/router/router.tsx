@@ -149,13 +149,23 @@ export const routes = createBrowserRouter([
           </Suspense>
         ),
       },
-      {
+     {
         path: "/revenue",
         element: (
           <Suspense fallback={<LoadingScreen />}>
             <RevenueLayout />
           </Suspense>
         ),
+        children: [
+          {
+            path: "emergency",
+            element: <RevenueLayout  />
+          },
+          {
+            path: "non-emergency",
+            element: <RevenueLayout  />
+          }
+        ]
       },
       {
         path: "/my-team",
