@@ -27,7 +27,6 @@ const CareDetails: React.FC<CareDetailsProps> = ({ booking }) => {
   const diagnosis = booking?.treatment_doc?.diagnosis || "No diagnosis provided";
   const treatment = booking?.treatment_doc?.treatments || "No treatment provided";
   const handoffNote = booking?.handover_note || "No handoff note provided";
-  const medicationGiven = booking?.treatment_doc?.medication_given || "";
 
   const openImageModal = (images: string[], index: number, type: 'pre' | 'post') => {
     setCurrentImageSet(type);
