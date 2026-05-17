@@ -18,6 +18,8 @@ import AcceptBookingModal from "./AcceptBookingModal";
 
 interface UserProfileProps {
   booking: any;
+  bookingType?: string;
+
 }
 
 const UserProfile: React.FC<UserProfileProps> =  ({ booking, bookingType }) => {
