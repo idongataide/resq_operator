@@ -4,21 +4,15 @@ import { Modal, Button, Select, Spin } from "antd";
 import { FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
-import { useProviders } from "@/hooks/useProvider";
 import { assignBookingRequest } from "@/api/bookingsApi";
-
-
+import { useAmbulanceLeadsSearch } from "@/hooks/useAmbulanceLeads";
 
 interface AssignOperatorModalProps {
   open: boolean;
   onClose: () => void;
   bookingId: string;
+  booking?: any; // Add booking prop to access schedule_id
   onAssigned?: () => void;
-}
-
-interface Provider {
-  provider_id: string;
-  name: string;
 }
 
 const { Option } = Select;
@@ -27,16 +21,33 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
   open,
   onClose,
   bookingId,
+  booking,
   onAssigned,
 }) => {
-  const [selectedProviderId, setSelectedProviderId] = useState<string>("");
+  const [selectedAmbulance, setSelectedAmbulance] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: providers, isLoading } = useProviders();
   const { mutate } = useSWRConfig();
+  
+  const { data: ambulancesLeads, isLoading: leadsLoading } = useAmbulanceLeadsSearch({
+    type: 'lead',
+  });
+
+  // Helper functions for ambulance display
+  const getAmbulanceDisplayName = (ambulance: any) => {
+    return ambulance.full_name || ambulance.lead_name || 'Unnamed Lead';
+  };
+
+  const getAmbulanceKey = (ambulance: any) => {
+    return ambulance.lead_id;
+  };
+
+  const getAmbulanceValue = (ambulance: any) => {
+    return ambulance.lead_id;
+  };
 
   const handleAssign = async () => {
-    if (!selectedProviderId) {
-      toast.error("Please select a provider");
+    if (!selectedAmbulance) {
+      toast.error("Please select an ambulance lead");
       return;
     }
 
@@ -46,16 +57,29 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
     try {
       const payload = {
         booking_id: bookingId,
-        provider_id: selectedProviderId,
+        lead_id: selectedAmbulance,
       };
 
       const response = await assignBookingRequest(payload);
 
       if (response?.status === "ok") {
         toast.success("Operator assigned successfully!", { id: loadingToast });
-        mutate(`/providers/${selectedProviderId}`); // Refresh provider data
+        
+        // Mutate the correct endpoints based on booking type
+        if (booking?.schedule_id) {
+          // Non-emergency booking
+          mutate(`/bookings/schedule/${booking.schedule_id}`);
+        } else {
+          // Emergency booking
+          mutate(`/bookings/${bookingId}`);
+        }
+        mutate('/bookings');
+        
         onAssigned?.();
         onClose();
+        
+        // Reset selection
+        setSelectedAmbulance("");
       } else {
         toast.error(response?.message || "Failed to assign operator", { id: loadingToast });
       }
@@ -67,10 +91,15 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
     }
   };
 
+  const handleClose = () => {
+    setSelectedAmbulance("");
+    onClose();
+  };
+
   return (
     <Modal
       open={open}
-      onCancel={onClose}
+      onCancel={handleClose}
       footer={null}
       centered
       width={500}
@@ -79,36 +108,46 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
     >
       <div className="bg-[#F3F5F9] px-4 py-6 mb-6">
         <h2 className="text-xl font-semibold text-[#000A0F]">Assign Operator</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Select an ambulance lead to assign to this booking
+        </p>
       </div>
 
       <div className="px-6 pb-6">
-        {isLoading ? (
+        {leadsLoading ? (
           <div className="flex justify-center items-center py-8">
-            <Spin />
+            <Spin size="large" />
           </div>
         ) : (
-          <Select
-            placeholder="Select ambulance provider"
-            className="w-full"
-            size="large"
-            value={selectedProviderId || undefined}
-            onChange={(value) => setSelectedProviderId(value)}
-            notFoundContent="No providers available"
-            loading={isLoading}
-          >
-            {providers?.map((provider: Provider) => (
-              <Option key={provider.provider_id} value={provider.provider_id}>
-                {provider.name}
-              </Option>
-            ))}
-          </Select>
+          <>
+            <Select
+              placeholder="Select ambulance lead"
+              className="w-full"
+              size="large"
+              value={selectedAmbulance}
+              onChange={(value) => setSelectedAmbulance(value)}
+              allowClear
+              loading={leadsLoading}
+              notFoundContent={leadsLoading ? "Loading..." : "No available ambulances"}
+            >
+              {Array.isArray(ambulancesLeads) && ambulancesLeads?.length > 0 ? (
+                ambulancesLeads?.map((ambulance: any) => (
+                  <Option key={getAmbulanceKey(ambulance)} value={getAmbulanceValue(ambulance)}>
+                    {getAmbulanceDisplayName(ambulance)}
+                  </Option>
+                ))
+              ) : (
+                <Option disabled>No ambulances available</Option>
+              )}
+            </Select>
+          </>
         )}
 
         {/* Buttons */}
         <div className="flex justify-between gap-4 pt-6 mt-4 border-t border-gray-200">
           <Button
             size="large"
-            onClick={onClose}
+            onClick={handleClose}
             disabled={isSubmitting}
             className="w-full bg-[#F5EAEA]! text-[#DB4A47]! font-medium! border-none!"
           >
@@ -120,8 +159,8 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
             type="primary"
             onClick={handleAssign}
             loading={isSubmitting}
-            disabled={!selectedProviderId || isSubmitting}
-            className="w-full bg-[#DB4A47]! hover:bg-[#c63d3a]! border-none!"
+            disabled={!selectedAmbulance || isSubmitting}
+            className="w-full bg-[#DB4A47]! hover:bg-[#c63d3a]! border-none! text-white!"
           >
             Assign Operator
           </Button>

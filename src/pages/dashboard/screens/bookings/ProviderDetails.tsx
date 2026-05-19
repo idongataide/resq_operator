@@ -211,6 +211,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
         onClose={() => setIsAssignModalOpen(false)}
         bookingId={booking?.booking_id}
         onAssigned={handleAssigned}
+        booking={booking}
       />
     </>
   );

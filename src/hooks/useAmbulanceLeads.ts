@@ -37,3 +37,4 @@ export const useAmbulanceLeadsSearch = (params?: AmbulanceLeadsParams) => {
 
   return { data, isLoading, mutate };
 };
+
