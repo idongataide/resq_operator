@@ -283,6 +283,15 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                     </p>
                   </div>
               </div>
+              <div className="flex items-start gap-3">
+                <FiPhone className="w-4 h-4 text-[#354959] mt-1" />
+                <div>
+                  <p className="text-[#354959]">Emergency Number</p>
+                  <p className="font-medium text-[#000A0F]">
+                    {booking.user_data?.emergency_contact || "N/A"}
+                  </p>
+                </div>
+              </div>
               </>)}
               {booking.emergency_booking_type === "sos" && (
                   <>                
@@ -298,15 +307,7 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                 </>
               )}
               
-              {/* <div className="flex items-start gap-3">
-                <FiPhone className="w-4 h-4 text-[#354959] mt-1" />
-                <div>
-                  <p className="text-[#354959]">Emergency Number</p>
-                  <p className="font-medium text-[#000A0F]">
-                    {booking.customer_data?.customer_phone || booking.phone_number || "N/A"}
-                  </p>
-                </div>
-              </div> */}
+              
 
 
               
