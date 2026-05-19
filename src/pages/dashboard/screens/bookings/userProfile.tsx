@@ -177,7 +177,7 @@ const UserProfile: React.FC<UserProfileProps> =  ({ booking, bookingType }) => {
                 </div>
               )}
 
-                {operationStatus === 3 && (
+              {operationStatus === 3 && (
               <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">                                
                   <Button 
                     type='primary' 

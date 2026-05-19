@@ -14,6 +14,9 @@ import {
 } from "react-icons/fi";
 import { Button } from "antd";
 import UpdateLocationModal from "./UpdateLocationModal";
+import { TbRouteSquare } from "react-icons/tb";
+import { GiCornerFlag } from "react-icons/gi";
+
 
 interface RequestDetailsProps {
   booking: any; 
@@ -45,7 +48,7 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
             <div className="w-6 h-6 flex items-center justify-center rounded-md bg-red-100">
               <FiNavigation className="w-4 h-4 text-[#DB4A47]" />
             </div>
-            <h2 className="text-sm font-semibold tracking-wide text-[#808D97] uppercase">
+            <h2 className="text-sm font-semibold tracking-wide text-[#354959] uppercase">
               Request Details
             </h2>
           </div>
@@ -68,12 +71,12 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
 
         <div className="p-6">
           {/* Info Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6 text-sm text-[#808D97]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6 text-sm text-[#354959]">
             <div className="space-y-6">
               <div className="flex items-start gap-3">
-                <FiCalendar className="w-4 h-4 text-[#808D97] mt-1" />
+                <FiCalendar className="w-4 h-4 text-[#354959] mt-1" />
                 <div>
-                  <p className="text-[#808D97]">Request Date & Time</p>
+                  <p className="text-[#354959]">Request Date & Time</p>
                   <p className="font-medium text-[#000A0F]">
                     {formatDate(booking.created_at)}
                   </p>
@@ -83,9 +86,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
               {bookingType === "non-emergency" && (
                 <>
                   <div className="flex items-start gap-3">
-                    <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
+                    <FiNavigation className="w-4 h-4 text-[#354959] mt-1" />
                     <div>
-                      <p className="text-[#808D97]">Reason</p>
+                      <p className="text-[#354959]">Reason</p>
                       <p className="font-medium text-[#000A0F] capitalize">
                         {booking.booking_reason || "N/A"}
                       </p>
@@ -93,9 +96,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                   </div>
                   {booking.booking_reason === "event" && (
                     <div className="flex items-start gap-3">
-                      <FiClock className="w-4 h-4 text-[#808D97] mt-1" />
+                      <FiClock className="w-4 h-4 text-[#354959] mt-1" />
                       <div>
-                        <p className="text-[#808D97]">
+                        <p className="text-[#354959]">
                           Event Time
                         </p>
                         <p className="font-medium text-[#000A0F] capitalize">
@@ -107,9 +110,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                   {booking.booking_reason === "hospital-visit" && (
                     <>
                     <div className="flex items-start gap-3">
-                      <FiClock className="w-4 h-4 text-[#808D97] mt-1" />
+                      <FiClock className="w-4 h-4 text-[#354959] mt-1" />
                       <div>
-                        <p className="text-[#808D97]">
+                        <p className="text-[#354959]">
                           Pickup Time
                         </p>
                         <p className="font-medium text-[#000A0F] capitalize">
@@ -118,9 +121,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <FiUser className="w-4 h-4 text-[#808D97] mt-1" />
+                      <FiUser className="w-4 h-4 text-[#354959] mt-1" />
                       <div>
-                        <p className="text-[#808D97]">
+                        <p className="text-[#354959]">
                           No. of Adult
                         </p>
                         <p className="font-medium text-[#000A0F] capitalize">
@@ -134,9 +137,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
               )}
 {/* 
               <div className="flex items-start gap-3">
-                <FiMapPin className="w-4 h-4 text-[#808D97] mt-1" />
+                <FiMapPin className="w-4 h-4 text-[#354959] mt-1" />
                 <div>
-                  <p className="text-[#808D97]">State</p>
+                  <p className="text-[#354959]">State</p>
                   <p className="font-medium text-[#000A0F]">
                     {getStateFromAddress(booking.start_address)}
                   </p>
@@ -144,9 +147,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
               </div> */}
 
                 <div className="flex items-start gap-3">
-                  <FiMapPin className="w-4 h-4 text-[#808D97] mt-1" />
+                  <FiMapPin className="w-4 h-4 text-[#354959] mt-1" />
                   <div>
-                    <p className="text-[#808D97]">
+                    <p className="text-[#354959]">
                       {booking.booking_reason === "event" 
                         ? "Event Address" 
                         : "Pickup Address"}
@@ -160,29 +163,20 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
               {booking.emergency_booking_type === "sos" && (
                 <>
               <div className="flex items-start gap-3">
-                <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
+                <GiCornerFlag  className="w-4 h-4 text-[#354959] mt-1" />
                 <div>
-                  <p className="text-[#808D97]">Landmark</p>
+                  <p className="text-[#354959]">Landmark</p>
                   <p className="font-medium text-[#000A0F]">
                     {booking.user_data?.landmark || "N/A"}
                   </p>
                 </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
-                <div>
-                  <p className="text-[#808D97]">Apartment Direction</p>
-                  <p className="font-medium text-[#000A0F]">
-                    {booking.user_data?.house_description || "N/A"}
-                  </p>
-                </div>
-              </div>
+              </div>              
               </>)}
               
               <div className="flex items-start gap-3">
-                <FiCreditCard className="w-4 h-4 text-[#808D97] mt-1" />
+                <FiCreditCard className="w-4 h-4 text-[#354959] mt-1" />
                 <div>
-                  <p className="text-[#808D97]">Payment Method</p>
+                  <p className="text-[#354959]">Payment Method</p>
                   <p className="font-medium text-[#000A0F] capitalize">
                     {booking.payment_method || "N/A"}
                   </p>
@@ -192,9 +186,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
 
             <div className="space-y-6">
               <div className="flex items-start gap-3">
-                <FiPhone className="w-4 h-4 text-[#808D97] mt-1" />
+                <FiPhone className="w-4 h-4 text-[#354959] mt-1" />
                 <div>
-                  <p className="text-[#808D97]">Request Type</p>
+                  <p className="text-[#354959]">Request Type</p>
                   <p className="font-medium text-[#000A0F]">
                     {bookingType === "non-emergency" ? "Non-Emergency" : "Emergency"}
                   </p>
@@ -203,9 +197,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
               {bookingType === "non-emergency" && (
                 <>
               <div className="flex items-start gap-3">
-                <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
+                <FiNavigation className="w-4 h-4 text-[#354959] mt-1" />
                 <div>
-                  <p className="text-[#808D97]">Trip Type</p>
+                  <p className="text-[#354959]">Trip Type</p>
                   <p className="font-medium text-[#000A0F] capitalize">
                     {booking.trip_type || "N/A"}
                   </p>
@@ -214,9 +208,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                  {booking.booking_reason === "event" && (
                   <>
                     <div className="flex items-start gap-3">
-                      <FiCalendar className="w-4 h-4 text-[#808D97] mt-1" />
+                      <FiCalendar className="w-4 h-4 text-[#354959] mt-1" />
                       <div>
-                        <p className="text-[#808D97]">
+                        <p className="text-[#354959]">
                           Event Date
                         </p>
                         <p className="font-medium text-[#000A0F] capitalize">
@@ -225,9 +219,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <FiCalendar className="w-4 h-4 text-[#808D97] mt-1" />
+                      <FiCalendar className="w-4 h-4 text-[#354959] mt-1" />
                       <div>
-                        <p className="text-[#808D97]">
+                        <p className="text-[#354959]">
                           No. of Days
                         </p>
                         <p className="font-medium text-[#000A0F] capitalize">
@@ -242,9 +236,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                   {booking.booking_reason === "hospital-visit" && (
                     <>
                     <div className="flex items-start gap-3">
-                      <FiCalendar className="w-4 h-4 text-[#808D97] mt-1" />
+                      <FiCalendar className="w-4 h-4 text-[#354959] mt-1" />
                       <div>
-                        <p className="text-[#808D97]">
+                        <p className="text-[#354959]">
                           Return Time
                         </p>
                         <p className="font-medium text-[#000A0F] capitalize">
@@ -253,9 +247,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <FiUser className="w-4 h-4 text-[#808D97] mt-1" />
+                      <FiUser className="w-4 h-4 text-[#354959] mt-1" />
                       <div>
-                        <p className="text-[#808D97]">
+                        <p className="text-[#354959]">
                           No. of Child
                         </p>
                         <p className="font-medium text-[#000A0F] capitalize">
@@ -264,9 +258,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <FiHome className="w-4 h-4 text-[#808D97] mt-1" />
+                      <FiHome className="w-4 h-4 text-[#354959] mt-1" />
                       <div>
-                        <p className="text-[#808D97]">Drop Off</p>
+                        <p className="text-[#354959]">Drop Off</p>
                         <p className="font-medium text-[#000A0F]">
                           {booking.end_address || "N/A"}
                         </p>
@@ -275,11 +269,39 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                     </>
                   )}
               </>)}
-               
+
+            
+
+              {bookingType !== "non-emergency" && (
+                <>
+              <div className="flex items-start gap-3">
+                  <FiHome className="w-4 h-4 text-[#354959] mt-1" />
+                  <div>
+                    <p className="text-[#354959]">Drop Off</p>
+                    <p className="font-medium text-[#000A0F]">
+                      {booking.end_address || "N/A"}
+                    </p>
+                  </div>
+              </div>
+              </>)}
+              {booking.emergency_booking_type === "sos" && (
+                  <>                
+                  <div className="flex items-start gap-3">
+                    <TbRouteSquare className="w-4 h-4 text-[#354959] mt-1" />
+                    <div>
+                      <p className="text-[#354959]">Apartment Direction</p>
+                      <p className="font-medium text-[#000A0F]">
+                        {booking.user_data?.house_description || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+              
               {/* <div className="flex items-start gap-3">
-                <FiPhone className="w-4 h-4 text-[#808D97] mt-1" />
+                <FiPhone className="w-4 h-4 text-[#354959] mt-1" />
                 <div>
-                  <p className="text-[#808D97]">Emergency Number</p>
+                  <p className="text-[#354959]">Emergency Number</p>
                   <p className="font-medium text-[#000A0F]">
                     {booking.customer_data?.customer_phone || booking.phone_number || "N/A"}
                   </p>
@@ -290,9 +312,9 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
               
 
               {/* <div className="flex items-start gap-3">
-                <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
+                <FiNavigation className="w-4 h-4 text-[#354959] mt-1" />
                 <div>
-                  <p className="text-[#808D97]">Dropoff Coordinates</p>
+                  <p className="text-[#354959]">Dropoff Coordinates</p>
                   <p className="font-medium text-[#000A0F]">
                     {booking.end_coord?.latitude && booking.end_coord?.longitude
                       ? `${booking.end_coord.latitude.toFixed(4)}, ${booking.end_coord.longitude.toFixed(4)}`
