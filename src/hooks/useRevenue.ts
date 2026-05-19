@@ -1,5 +1,5 @@
 // hooks/revenue/useOperatorRevenue.ts
-import { getOperatorRevenue, getRemittedRevenue, getStakeholderRevenue,getRevenuePayout } from '@/api/revenueApi';
+import { getOperatorRevenue, getRemittedRevenue, getStakeholderRevenue, getRevenuePayout, getRevenuesStat } from '@/api/revenueApi';
 import useSWR from 'swr';
 
 
@@ -66,7 +66,6 @@ export const useStakeholderRevenue = (params?: {
 }) => {
   const { isNonEmergency, ...restParams } = params || {};
   
-  // Choose endpoint based on emergency/non-emergency
   const endpoint = isNonEmergency 
     ? '/payments/schedule-stakeholder-revenue'
     : '/payments/stakeholder-revenue';
@@ -80,6 +79,33 @@ export const useStakeholderRevenue = (params?: {
   );
 
   return { data: data?.data || [], summary: data?.summary, pagination: data?.pagination, isLoading, mutate };
+};
+// Fixed useRevenuesStat hook
+export const useRevenuesStat = (params?: {
+  isNonEmergency?: boolean;
+  operatorEarning?: string;
+}) => {
+  const { isNonEmergency, operatorEarning, ...restParams } = params || {};
+  
+  // Fix the endpoint construction
+  const endpoint = isNonEmergency 
+    ? `/bookings?component=${operatorEarning || 'inflow-earnings'}`
+    : `/bookings?component=${operatorEarning || 'inflow-earnings'}`;
+  
+  const { data, isLoading, mutate } = useSWR(
+    params ? [endpoint, restParams] : null,
+    () => getRevenuesStat(endpoint, restParams),
+    {
+      revalidateOnFocus: false,
+    },
+  );
+
+  return { 
+    data: data?.data || [], 
+    pagination: data?.pagination, 
+    isLoading, 
+    mutate 
+  };
 };
 
 

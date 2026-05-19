@@ -26,6 +26,18 @@ export const getRevenuePayout = async (endpoint: string, params?: any) => {
   }
 };
 
+export const getRevenuesStat = async (endpoint: string, params?: any) => {
+  try {
+    return await axiosAPIInstance
+      .get(endpoint, { params })
+      .then((res) => {
+        return res?.data;
+      });
+  } catch (error) {
+    return error;
+  }
+};
+
 
 
 export const getStakeholderRevenue = async (endpoint: string, params?: any) => {

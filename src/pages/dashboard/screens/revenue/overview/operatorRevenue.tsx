@@ -56,16 +56,17 @@ const OperatorRevenue: React.FC<OperatorRevenueProps> = ({ isNonEmergency = fals
     page: currentPage,
   });
 
-  // Process data for table
+  // Process data for table - matching the actual API response structure
   const processedData = useMemo(() => {
     if (!data || data.length === 0) return [];
 
     return data.map((item: any, index: number) => ({
-      key: item.id || item.operator_id || item.lead_id || index,
-      dateJoined: item.date_joined || item.created_at || item.join_date || 'N/A',
-      operatorName: item.operator_name || item.lead_data?.full_name || item.name || item.full_name || 'N/A',
-      operatorEarning: item.operator_earning || item.total_earning || item.amount || item.revenue || 0,
-      totalRequest: item.total_requests || item.request_count || item.booking_count || 0,
+      key: item.provider_id || item.id || index,
+      dateJoined: item.dateJoined || item.created_at || 'N/A',
+      operatorName: item.name || item.operator_name || item.full_name || 'N/A',
+      operatorEarning: item.total_amount || item.operator_earning || 0,
+      totalRequest: item.total_request || item.total_requests || 0,
+      totalCompleted: item.total_completed || 0,
     }));
   }, [data]);
 
@@ -94,6 +95,20 @@ const OperatorRevenue: React.FC<OperatorRevenueProps> = ({ isNonEmergency = fals
       sorter: (a: any, b: any) => a.operatorName.localeCompare(b.operatorName),
     },
     {
+      title: "Total Completed",
+      dataIndex: "totalCompleted",
+      key: "totalCompleted",
+      sorter: (a: any, b: any) => (a.totalCompleted || 0) - (b.totalCompleted || 0),
+      render: (value: number) => value?.toLocaleString() || '0',
+    },
+    {
+      title: "Total Request",
+      dataIndex: "totalRequest",
+      key: "totalRequest",
+      sorter: (a: any, b: any) => (a.totalRequest || 0) - (b.totalRequest || 0),
+      render: (value: number) => value?.toLocaleString() || '0',
+    },
+    {
       title: "Operator Earning",
       dataIndex: "operatorEarning",
       key: "operatorEarning",
@@ -104,13 +119,6 @@ const OperatorRevenue: React.FC<OperatorRevenueProps> = ({ isNonEmergency = fals
           <span className="font-medium">₦{value?.toLocaleString() || '0'}</span>
         </div>
       ),
-    },
-    {
-      title: "Total Request",
-      dataIndex: "totalRequest",
-      key: "totalRequest",
-      sorter: (a: any, b: any) => (a.totalRequest || 0) - (b.totalRequest || 0),
-      render: (value: number) => value?.toLocaleString() || '0',
     },
   ], []);
 

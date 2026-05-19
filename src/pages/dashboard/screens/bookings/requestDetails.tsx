@@ -9,6 +9,8 @@ import {
   FiHome,
   FiEdit,
   FiChevronUp,
+  FiClock,
+  FiUser,
 } from "react-icons/fi";
 import { Button } from "antd";
 import UpdateLocationModal from "./UpdateLocationModal";
@@ -32,13 +34,6 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
       hour: '2-digit',
       minute: '2-digit',
     }).replace(',', ' ');
-  };
-
-  // Get state from address (simplified - you might want to parse this properly)
-  const getStateFromAddress = (address: string) => {
-    if (!address) return "N/A";
-    const parts = address.split(',');
-    return parts[parts.length - 2]?.trim() || parts[parts.length - 1]?.trim() || "N/A";
   };
 
   return (
@@ -84,7 +79,60 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                   </p>
                 </div>
               </div>
-
+              
+              {bookingType === "non-emergency" && (
+                <>
+                  <div className="flex items-start gap-3">
+                    <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
+                    <div>
+                      <p className="text-[#808D97]">Reason</p>
+                      <p className="font-medium text-[#000A0F] capitalize">
+                        {booking.booking_reason || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                  {booking.booking_reason === "event" && (
+                    <div className="flex items-start gap-3">
+                      <FiClock className="w-4 h-4 text-[#808D97] mt-1" />
+                      <div>
+                        <p className="text-[#808D97]">
+                          Event Time
+                        </p>
+                        <p className="font-medium text-[#000A0F] capitalize">
+                          {booking.ride_time || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {booking.booking_reason === "hospital-visit" && (
+                    <>
+                    <div className="flex items-start gap-3">
+                      <FiClock className="w-4 h-4 text-[#808D97] mt-1" />
+                      <div>
+                        <p className="text-[#808D97]">
+                          Pickup Time
+                        </p>
+                        <p className="font-medium text-[#000A0F] capitalize">
+                          {booking.ride_time || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <FiUser className="w-4 h-4 text-[#808D97] mt-1" />
+                      <div>
+                        <p className="text-[#808D97]">
+                          No. of Adult
+                        </p>
+                        <p className="font-medium text-[#000A0F] capitalize">
+                          {booking.adult_count || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    </>
+                  )}
+                </>
+              )}
+{/* 
               <div className="flex items-start gap-3">
                 <FiMapPin className="w-4 h-4 text-[#808D97] mt-1" />
                 <div>
@@ -93,17 +141,22 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                     {getStateFromAddress(booking.start_address)}
                   </p>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="flex items-start gap-3">
-                <FiMapPin className="w-4 h-4 text-[#808D97] mt-1" />
-                <div>
-                  <p className="text-[#808D97]">Pickup Address</p>
-                  <p className="font-medium text-[#000A0F]">
-                    {booking.start_address || "N/A"}
-                  </p>
+                <div className="flex items-start gap-3">
+                  <FiMapPin className="w-4 h-4 text-[#808D97] mt-1" />
+                  <div>
+                    <p className="text-[#808D97]">
+                      {booking.booking_reason === "event" 
+                        ? "Event Address" 
+                        : "Pickup Address"}
+                    </p>
+                    <p className="font-medium text-[#000A0F]">
+                      {booking.start_address || "N/A"}
+                    </p>
+                  </div>
                 </div>
-              </div>
+
               {booking.emergency_booking_type === "sos" && (
                 <>
               <div className="flex items-start gap-3">
@@ -125,6 +178,16 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                 </div>
               </div>
               </>)}
+              
+              <div className="flex items-start gap-3">
+                <FiCreditCard className="w-4 h-4 text-[#808D97] mt-1" />
+                <div>
+                  <p className="text-[#808D97]">Payment Method</p>
+                  <p className="font-medium text-[#000A0F] capitalize">
+                    {booking.payment_method || "N/A"}
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-6">
@@ -137,35 +200,94 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                   </p>
                 </div>
               </div>
+              {bookingType === "non-emergency" && (
+                <>
               <div className="flex items-start gap-3">
+                <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
+                <div>
+                  <p className="text-[#808D97]">Trip Type</p>
+                  <p className="font-medium text-[#000A0F] capitalize">
+                    {booking.trip_type || "N/A"}
+                  </p>
+                </div>
+              </div>
+                 {booking.booking_reason === "event" && (
+                  <>
+                    <div className="flex items-start gap-3">
+                      <FiCalendar className="w-4 h-4 text-[#808D97] mt-1" />
+                      <div>
+                        <p className="text-[#808D97]">
+                          Event Date
+                        </p>
+                        <p className="font-medium text-[#000A0F] capitalize">
+                          {booking.ride_date || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <FiCalendar className="w-4 h-4 text-[#808D97] mt-1" />
+                      <div>
+                        <p className="text-[#808D97]">
+                          No. of Days
+                        </p>
+                        <p className="font-medium text-[#000A0F] capitalize">
+                            {booking.event_days 
+                            ? `${booking.event_days} ${booking.event_days === 1 ? 'day' : 'days'}` 
+                            : "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    </>
+                  )}
+                  {booking.booking_reason === "hospital-visit" && (
+                    <>
+                    <div className="flex items-start gap-3">
+                      <FiCalendar className="w-4 h-4 text-[#808D97] mt-1" />
+                      <div>
+                        <p className="text-[#808D97]">
+                          Return Time
+                        </p>
+                        <p className="font-medium text-[#000A0F] capitalize">
+                          {booking.ride_date || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <FiUser className="w-4 h-4 text-[#808D97] mt-1" />
+                      <div>
+                        <p className="text-[#808D97]">
+                          No. of Child
+                        </p>
+                        <p className="font-medium text-[#000A0F] capitalize">
+                          {booking.child_count || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <FiHome className="w-4 h-4 text-[#808D97] mt-1" />
+                      <div>
+                        <p className="text-[#808D97]">Drop Off</p>
+                        <p className="font-medium text-[#000A0F]">
+                          {booking.end_address || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    </>
+                  )}
+              </>)}
+               
+              {/* <div className="flex items-start gap-3">
                 <FiPhone className="w-4 h-4 text-[#808D97] mt-1" />
                 <div>
                   <p className="text-[#808D97]">Emergency Number</p>
                   <p className="font-medium text-[#000A0F]">
-                    {booking.customer_data?.emergency_contact || booking.phone_number || "N/A"}
+                    {booking.customer_data?.customer_phone || booking.phone_number || "N/A"}
                   </p>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="flex items-start gap-3">
-                <FiCreditCard className="w-4 h-4 text-[#808D97] mt-1" />
-                <div>
-                  <p className="text-[#808D97]">Payment Method</p>
-                  <p className="font-medium text-[#000A0F] capitalize">
-                    {booking.payment_method || "N/A"}
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-start gap-3">
-                <FiHome className="w-4 h-4 text-[#808D97] mt-1" />
-                <div>
-                  <p className="text-[#808D97]">Drop Off</p>
-                  <p className="font-medium text-[#000A0F]">
-                    {booking.end_address || "N/A"}
-                  </p>
-                </div>
-              </div>
+              
 
               {/* <div className="flex items-start gap-3">
                 <FiNavigation className="w-4 h-4 text-[#808D97] mt-1" />
