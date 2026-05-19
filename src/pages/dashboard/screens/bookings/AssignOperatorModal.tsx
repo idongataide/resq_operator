@@ -63,7 +63,7 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
       const response = await assignBookingRequest(payload);
 
       if (response?.status === "ok") {
-        toast.success("Operator assigned successfully!", { id: loadingToast });
+        toast.success("Lead assigned successfully!", { id: loadingToast });
         
         // Mutate the correct endpoints based on booking type
         if (booking?.schedule_id) {
@@ -81,11 +81,11 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
         // Reset selection
         setSelectedAmbulance("");
       } else {
-        toast.error(response?.message || "Failed to assign operator", { id: loadingToast });
+        toast.error(response?.message || "Failed to assign lead", { id: loadingToast });
       }
     } catch (error: any) {
       console.error("Assign error:", error);
-      toast.error(error?.response?.data?.msg || error?.message || "Failed to assign operator", { id: loadingToast });
+      toast.error(error?.response?.data?.msg || error?.message || "Failed to assign lead", { id: loadingToast });
     } finally {
       setIsSubmitting(false);
     }
@@ -162,7 +162,7 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
             disabled={!selectedAmbulance || isSubmitting}
             className="w-full bg-[#DB4A47]! hover:bg-[#c63d3a]! border-none! text-white!"
           >
-            Assign Operator
+            Assign Lead
           </Button>
         </div>
       </div>
