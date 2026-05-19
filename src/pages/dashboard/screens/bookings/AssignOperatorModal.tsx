@@ -56,7 +56,7 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
 
     try {
       const payload = {
-        booking_id: bookingId,
+        booking_id: booking.schedule_id || bookingId, // Use schedule_id for non-emergency, bookingId for emergency
         lead_id: selectedAmbulance,
       };
 
@@ -122,7 +122,7 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
           <>
             <Select
               placeholder="Select ambulance lead"
-              className="w-full"
+              className="w-full capitalize"
               size="large"
               value={selectedAmbulance}
               onChange={(value) => setSelectedAmbulance(value)}
