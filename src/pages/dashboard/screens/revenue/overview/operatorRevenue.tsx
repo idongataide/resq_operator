@@ -63,10 +63,10 @@ const OperatorRevenue: React.FC<OperatorRevenueProps> = ({ isNonEmergency = fals
     return data.map((item: any, index: number) => ({
       key: item.provider_id || item.id || index,
       dateJoined: item.dateJoined || item.created_at || 'N/A',
-      operatorName: item.name || item.operator_name || item.full_name || 'N/A',
-      operatorEarning: item.total_amount || item.operator_earning || 0,
-      totalRequest: item.total_request || item.total_requests || 0,
-      totalCompleted: item.total_bookings || 0,
+      operatorName: item.name || 'N/A',
+      operatorEarning: item.total_earnings || 0,
+      totalRequest: item.total_bookings || 0,
+      totalCompleted: item.total_completed || 0,
     }));
   }, [data]);
 

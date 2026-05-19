@@ -131,7 +131,7 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ booking, bookingType, onSucce
                   index !== invoices.length - 1 ? 'border-b border-[#E4E7EC]' : ''
                 }`}
               >
-                <span className="text-[#000A0F]">{fee.name}</span>
+                <span className="text-[#000A0F] capitalize">{fee.name}</span>
                 <span className="text-[#021C2F] font-medium">
                   ₦{fee.amount?.toLocaleString()}
                 </span>

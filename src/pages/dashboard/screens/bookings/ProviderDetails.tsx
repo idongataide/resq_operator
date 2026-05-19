@@ -10,9 +10,8 @@ import {
   FiUserCheck,
 } from "react-icons/fi";
 import { FaEnvelope, FaPen } from "react-icons/fa";
-import { Button, Spin } from "antd";
+import { Button} from "antd";
 import AssignOperatorModal from "./AssignOperatorModal";
-import { useSingleProvider } from "@/hooks/useProvider";
 import { useSWRConfig } from "swr";
 
 interface ProviderDetailsProps {
@@ -23,10 +22,8 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   
   const { mutate } = useSWRConfig();
-  
-  // Get provider_id from booking
   const providerId = booking?.provider_id;
-  const { provider, isLoading, mutate: mutateProvider } = useSingleProvider(providerId);
+  const provider = booking?.provider_data || {};
 
   // Get operation_status (default to 0 if not present)
   const operationStatus = booking?.operation_status ?? 0;
@@ -46,35 +43,24 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
 
   const handleAssigned = () => {
     mutate(`/bookings/${booking?.booking_id}`);
-    mutate('/bookings');
-    
-    if (providerId) {
-      mutateProvider();
-    }
+    mutate('/bookings');    
   };
 
   const providerDetails = {
-    providerName: provider?.name || "Not Assigned",
-    contact: provider?.phone_number || "N/A",
-    email: provider?.email || "N/A",
+    providerName: booking?.provider_data?.name || "Not Assigned",
+    contact: booking?.provider_data?.phone_number || "N/A",
+    email: booking?.provider_data?.email || "N/A",
     approvalDate: booking?.accepted_at 
       ? formatDate(booking.accepted_at)
       : "Not yet accepted",
-    ambulancePlate: booking?.vehicle_plate || "N/A",
-    colorModel: booking?.vehicle_model || "N/A",
-    ambulanceLead: booking?.driver_name || "N/A",
-    approvalReasons: booking?.booking_reason  || "No approval reasons provided",
+    ambulancePlate: booking?.ambulance_data?.plate_number || "N/A",
+    color: booking?.ambulance_data?.color || "N/A",
+    model: booking?.ambulance_data?.model || "N/A",
+    ambulanceLead: booking?.lead_data?.full_name || "N/A",
+    approvalReasons: booking?.notes || "No approval reasons provided",
   };
 
-  const isProviderAssigned = !!providerId && !!provider;
-
-  if (isLoading) {
-    return (
-      <div className="w-full max-w-5xl rounded-2xl shadow-xs bg-white overflow-hidden mt-4 p-8 flex justify-center items-center">
-        <Spin size="large" />
-      </div>
-    );
-  }
+  const isProviderAssigned = !!providerId;
 
   return (
     <>
@@ -88,7 +74,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
             <h2 className="text-sm font-semibold tracking-wide text-[#000A0F] uppercase">
               PROVIDER DETAILS
             </h2>
-            {isProviderAssigned && operationStatus === 2 && (
+            {(isProviderAssigned && operationStatus === 2) && (
               <span className="inline-flex items-center px-3 sm:px-4 py-1.5 bg-[#F8FEF5] rounded-full">
                 <FiCheckCircle className="w-4 h-4 text-[#4EA507] mr-2 flex-shrink-0" />
                 <span className="text-xs sm:text-sm font-medium text-[#4EA507]">Assigned</span>
@@ -104,7 +90,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
 
           <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
             {/* Show Assign Operator for status 1 (Admin Accepted) */}
-            {(operationStatus === 1 && booking?.payment_status === 1) && (
+            {(booking?.payment_status === 1 && operationStatus === 1) && (
               <Button 
                 onClick={() => setIsAssignModalOpen(true)}
                 className="bg-[#DB4A47]! text-white! border-none! hover:bg-[#c63d3a]! text-xs sm:text-sm px-3 sm:px-4"
@@ -124,15 +110,15 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
             )}
             
             {/* Show contact buttons when provider is assigned */}
-            {operationStatus === 2 && isProviderAssigned && (
+            {(operationStatus === 2 || operationStatus === 3 || isProviderAssigned) && (
               <div className="flex items-center gap-2 sm:gap-3">
-                {provider?.phone_number && (
-                  <a href={`tel:${provider.phone_number}`} className="p-2 hover:bg-red-50 rounded-full transition-colors">
+                {providerDetails.contact && providerDetails.contact !== "N/A" && (
+                  <a href={`tel:${providerDetails.contact}`} className="p-2 hover:bg-red-50 rounded-full transition-colors">
                     <FiPhone className="text-[#DB4A47] cursor-pointer hover:opacity-80 w-4 h-4 sm:w-5 sm:h-5" />
                   </a>
                 )}
-                {provider?.email && (
-                  <a href={`mailto:${provider.email}`} className="p-2 hover:bg-red-50 rounded-full transition-colors">
+                {providerDetails.email && providerDetails.email !== "N/A" && (
+                  <a href={`mailto:${providerDetails.email}`} className="p-2 hover:bg-red-50 rounded-full transition-colors">
                     <FaEnvelope className="text-[#DB4A47] cursor-pointer hover:opacity-80 w-4 h-4 sm:w-5 sm:h-5" />
                   </a>
                 )}
@@ -160,7 +146,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
               <FiUser className="w-4 h-4 sm:w-5 sm:h-5 text-[#808D97] mt-1 flex-shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="text-[#808D97] text-xs sm:text-sm">Provider Name</p>
-                <p className="font-medium text-[#000A0F] break-words">{providerDetails.providerName}</p>
+                <p className="font-medium text-[#000A0F] break-words capitalize">{providerDetails.providerName}</p>
               </div>
             </div>
 
@@ -192,7 +178,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
               <FiTruck className="w-4 h-4 sm:w-5 sm:h-5 text-[#808D97] mt-1 flex-shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="text-[#808D97] text-xs sm:text-sm">Colour/Model</p>
-                <p className="font-medium text-[#000A0F] break-words">{providerDetails.colorModel}</p>
+                <p className="font-medium text-[#000A0F] break-words capitalize">{providerDetails.color}/{providerDetails.model}</p>
               </div>
             </div>
 
@@ -200,7 +186,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
               <FiUserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-[#808D97] mt-1 flex-shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="text-[#808D97] text-xs sm:text-sm">Ambulance Lead Name</p>
-                <p className="font-medium text-[#000A0F] break-words">{providerDetails.ambulanceLead}</p>
+                <p className="font-medium text-[#000A0F] break-words capitalize">{providerDetails.ambulanceLead}</p>
               </div>
             </div>
           </div>
