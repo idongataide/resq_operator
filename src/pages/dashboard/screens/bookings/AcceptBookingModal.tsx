@@ -67,7 +67,6 @@ const AcceptBookingModal = ({
           lead_id: selectedAmbulance,
         });
       } else {
-        // Non-emergency booking - only send booking_id (ambulance_id will be handled by backend)
         response = await acceptBooking({
           booking_id: booking.schedule_id,
         });

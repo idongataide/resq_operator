@@ -99,11 +99,11 @@ export const cancelBooking = async (data: {
 
 export const assignBookingRequest = async (data: {
   booking_id: string;
-  lead_id: string;
+  ambulance_id: string;
 }) => {
   try {
     return await axiosAPIInstance
-      .post(`/bookings/assign-request`, data)
+      .post(`/bookings/accept-schedule`, data)
       .then((res) => {
         return res?.data;
       });

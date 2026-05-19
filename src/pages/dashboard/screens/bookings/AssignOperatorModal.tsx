@@ -5,7 +5,9 @@ import { FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
 import { assignBookingRequest } from "@/api/bookingsApi";
-import { useAmbulanceLeadsSearch } from "@/hooks/useAmbulanceLeads";
+import { useAmbulances } from "@/hooks/useAmbulance";
+
+
 
 interface AssignOperatorModalProps {
   open: boolean;
@@ -28,21 +30,19 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { mutate } = useSWRConfig();
   
-  const { data: ambulancesLeads, isLoading: leadsLoading } = useAmbulanceLeadsSearch({
-    type: 'lead',
-  });
+  const { data: ambulancesLeads, isLoading: leadsLoading } = useAmbulances();
 
   // Helper functions for ambulance display
   const getAmbulanceDisplayName = (ambulance: any) => {
-    return ambulance.full_name || ambulance.lead_name || 'Unnamed Lead';
+    return ambulance.lead_data?.full_name || ambulance.lead_name || 'Unnamed Lead';
   };
 
   const getAmbulanceKey = (ambulance: any) => {
-    return ambulance.lead_id;
+    return ambulance.ambulance_id;
   };
 
   const getAmbulanceValue = (ambulance: any) => {
-    return ambulance.lead_id;
+    return ambulance.ambulance_id;
   };
 
   const handleAssign = async () => {
@@ -57,7 +57,7 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
     try {
       const payload = {
         booking_id: booking.schedule_id || bookingId, // Use schedule_id for non-emergency, bookingId for emergency
-        lead_id: selectedAmbulance,
+        ambulance_id: selectedAmbulance,
       };
 
       const response = await assignBookingRequest(payload);

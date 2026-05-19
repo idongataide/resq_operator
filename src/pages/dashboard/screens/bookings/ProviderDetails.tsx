@@ -90,7 +90,7 @@ const ProviderDetails: React.FC<ProviderDetailsProps> = ({ booking }) => {
 
           <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
             {/* Show Assign Operator for status 1 (Admin Accepted) */}
-            {(booking?.payment_status === 1) && (
+            {(booking?.payment_status === 1 && operationStatus === 1) && (
               <Button 
                 onClick={() => setIsAssignModalOpen(true)}
                 className="bg-[#DB4A47]! text-white! border-none! hover:bg-[#c63d3a]! text-xs sm:text-sm px-3 sm:px-4"
