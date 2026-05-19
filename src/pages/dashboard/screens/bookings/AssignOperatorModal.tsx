@@ -52,7 +52,7 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
     }
 
     setIsSubmitting(true);
-    const loadingToast = toast.loading("Assigning operator...");
+    const loadingToast = toast.loading("Assigning lead...");
 
     try {
       const payload = {
@@ -107,7 +107,7 @@ const AssignOperatorModal: React.FC<AssignOperatorModalProps> = ({
       destroyOnClose
     >
       <div className="bg-[#F3F5F9] px-4 py-6 mb-6">
-        <h2 className="text-xl font-semibold text-[#000A0F]">Assign Operator</h2>
+        <h2 className="text-xl font-semibold text-[#000A0F]">Assign Lead</h2>
         <p className="text-sm text-gray-500 mt-1">
           Select an ambulance lead to assign to this booking
         </p>
