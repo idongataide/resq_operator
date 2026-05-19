@@ -1,5 +1,5 @@
 // hooks/revenue/useOperatorRevenue.ts
-import { getOperatorRevenue, getRemittedRevenue, getStakeholderRevenue } from '@/api/revenueApi';
+import { getOperatorRevenue, getRemittedRevenue, getStakeholderRevenue,getRevenuePayout } from '@/api/revenueApi';
 import useSWR from 'swr';
 
 
@@ -14,12 +14,38 @@ export const useOperatorRevenue = (params?: {
   
   // Choose endpoint based on emergency/non-emergency
   const endpoint = isNonEmergency 
-    ? '/payments/schedule-stakeholder-revenue'
+    ? '/payments/schedule-daily-revenue-operator'
     : '/payments/daily-revenue-operator';
 
   const { data, isLoading, mutate } = useSWR(
     params ? [endpoint, restParams] : null,
     () => getOperatorRevenue(endpoint, restParams),
+    {
+      revalidateOnFocus: false,
+    },
+  );
+
+  return { data: data?.data || [], summary: data?.summary, pagination: data?.pagination, isLoading, mutate };
+};
+
+
+export const useRevenuePayout = (params?: {
+  isNonEmergency?: boolean;
+  period?: string;
+  start_date?: string;
+  end_date?: string;
+  page?: number;
+}) => {
+  const { isNonEmergency, ...restParams } = params || {};
+  
+  // Choose endpoint based on emergency/non-emergency
+  const endpoint = isNonEmergency 
+    ? '/bookings/schedule-get-revenue-per-operator'
+    : '/bookings/get-revenue-per-operator';
+
+  const { data, isLoading, mutate } = useSWR(
+    params ? [endpoint, restParams] : null,
+    () => getRevenuePayout(endpoint, restParams),
     {
       revalidateOnFocus: false,
     },
@@ -42,7 +68,7 @@ export const useStakeholderRevenue = (params?: {
   
   // Choose endpoint based on emergency/non-emergency
   const endpoint = isNonEmergency 
-    ? '/payments/schedule-daily-revenue-operator'
+    ? '/payments/schedule-stakeholder-revenue'
     : '/payments/stakeholder-revenue';
 
   const { data, isLoading, mutate } = useSWR(
