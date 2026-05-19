@@ -144,7 +144,7 @@ const UserProfile: React.FC<UserProfileProps> =  ({ booking, bookingType }) => {
                  </span>
               </h2>
               
-              {(operationStatus === 0 || operationStatus  === 1 || operationStatus === 2)  && (
+              {(operationStatus === 0)  && (
                 <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
                   <Button 
                     icon={<FaEnvelope />} 
@@ -177,18 +177,24 @@ const UserProfile: React.FC<UserProfileProps> =  ({ booking, bookingType }) => {
                 </div>
               )}
 
-              {operationStatus === 3 && (
-              <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">                                
-                  <Button 
-                    type='primary' 
-                    className="text-white rounded-xl px-4 py-2 flex items-center gap-2 flex-1 sm:flex-none justify-center"
-                    icon={<FaEnvelope className="w-4 h-4" />}
-                    onClick={() => window.location.href = `mailto:${booking.user_data?.email || ''}`}
-                  >
-                    Chat with User
-                  </Button>
-              </div>
-                )}
+                 {[1, 2, 3].includes(operationStatus) && (
+                    <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
+                    <Button 
+                      className="rounded-xl px-3 py-2 bg-[#FDF6F6]! border-[#DB4A47]! flex-1 sm:flex-none"
+                      icon={<FaPhone className="w-4 h-4 text-[#DB4A47]!" />}
+                      onClick={() => window.location.href = `tel:${booking.customer_data?.customer_phone || booking.phone_number}`}
+                    />
+                    <Button 
+                      type='primary' 
+                      className="text-white rounded-xl px-4 py-2 flex items-center gap-2 flex-1 sm:flex-none justify-center"
+                      icon={<FaEnvelope className="w-4 h-4" />}
+                      onClick={() => window.location.href = `mailto:${booking.email || ''}`}
+                    >
+                      Chat with User
+                    </Button>
+                  </div>
+                )
+              }
             </div>
 
             <div className="border-t border-gray-200 my-4" />
