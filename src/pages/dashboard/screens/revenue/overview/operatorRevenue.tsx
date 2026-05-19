@@ -66,7 +66,7 @@ const OperatorRevenue: React.FC<OperatorRevenueProps> = ({ isNonEmergency = fals
       operatorName: item.name || item.operator_name || item.full_name || 'N/A',
       operatorEarning: item.total_amount || item.operator_earning || 0,
       totalRequest: item.total_request || item.total_requests || 0,
-      totalCompleted: item.total_completed || 0,
+      totalCompleted: item.total_bookings || 0,
     }));
   }, [data]);
 

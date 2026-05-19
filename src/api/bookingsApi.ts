@@ -52,14 +52,11 @@ export const getBookingById = async (booking_id: string, booking_type?: string) 
   }
 };
 
-// In your bookingsApi.ts
 export const acceptBooking = async (data: {
   booking_id: string;
   lead_id?: string;
-  ambulance_id?: string;
 }) => {
   try {
-    // Determine which endpoint to use based on provided data
     if (data.lead_id) {
       // Emergency booking
       return await axiosAPIInstance
@@ -68,16 +65,13 @@ export const acceptBooking = async (data: {
           lead_id: data.lead_id,
         })
         .then((res) => res?.data);
-    } else if (data.ambulance_id) {
+    } else {
       // Non-emergency booking
       return await axiosAPIInstance
         .post(`/bookings/accept-schedule`, {
           booking_id: data.booking_id,
-          ambulance_id: data.ambulance_id,
         })
         .then((res) => res?.data);
-    } else {
-      throw new Error("Invalid request: No ambulance or lead selected");
     }
   } catch (error) {
     return error;
