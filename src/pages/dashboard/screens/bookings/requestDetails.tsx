@@ -142,7 +142,7 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ booking, bookingType })
                 <div>
                   <p className="text-[#808D97]">Emergency Number</p>
                   <p className="font-medium text-[#000A0F]">
-                    {booking.customer_data?.customer_phone || booking.phone_number || "N/A"}
+                    {booking.customer_data?.emergency_contact || booking.phone_number || "N/A"}
                   </p>
                 </div>
               </div>

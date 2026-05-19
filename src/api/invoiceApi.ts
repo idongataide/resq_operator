@@ -4,8 +4,8 @@ import { axiosAPIInstance } from "./interceptor";
 
 export const createInvoice = async (data: {
   booking_id: string;
-  service_rendered: string[];
-}) => {
+ service_rendered: Array<{ name: string; amount: number }>;}) => {
+  
   try {
     const response = await axiosAPIInstance.post(
       `/bookings/invoice-schedule`,

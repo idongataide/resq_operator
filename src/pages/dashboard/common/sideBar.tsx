@@ -215,7 +215,7 @@ const SiderScreen: React.FC = () => {
             <div
               className="h-4 w-4 bg-green-500 absolute rounded-full left-0 bottom-0 border-white border-2"
             />
-            <div className="w-10 h-10 flex justify-center items-center rounded-full bg-[#FF6C2D] text-white font-medium text-[18px]">
+            <div className="w-10 h-10 flex justify-center items-center rounded-full bg-[#FF6C2D] text-white font-medium text-[18px] capitalize">
               {data?.firstName?.charAt(0)}
             </div>
           </div>

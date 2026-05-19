@@ -15,6 +15,7 @@ import { acceptBooking } from "@/api/bookingsApi";
 import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
 import AcceptBookingModal from "./AcceptBookingModal";
+import AddServicesModal from "./AddServicesModal";
 
 interface UserProfileProps {
   booking: any;
@@ -27,10 +28,30 @@ const UserProfile: React.FC<UserProfileProps> =  ({ booking, bookingType }) => {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isServicesModalOpen, setIsServicesModalOpen] = useState(false);
+  const [acceptedBooking, setAcceptedBooking] = useState<any>(null); 
   
   const { mutate } = useSWRConfig();
 
+  console.log("Booking data in UserProfile:", bookingType);
+
   const operationStatus = booking?.operation_status ?? 0;
+
+  const handleAcceptComplete = (acceptedBookingData: any) => {
+    setAcceptedBooking(acceptedBookingData);
+    setIsServicesModalOpen(true);
+  };
+
+  const handleInvoiceSuccess = () => {
+    // Mutate based on booking type
+    if (bookingType === "non-emergency") {
+      mutate(`/bookings/schedule/${booking.schedule_id}`);
+    } else {
+      mutate(`/bookings/${booking.booking_id}`);
+    }
+    mutate('/bookings');
+    toast.success('Services added successfully!');
+  };
 
   // Format date function
   const formatDate = (dateString: string) => {
@@ -258,7 +279,20 @@ const UserProfile: React.FC<UserProfileProps> =  ({ booking, bookingType }) => {
         open={isAcceptModalOpen}
         onClose={() => setIsAcceptModalOpen(false)}
         booking={booking}
+        onAcceptComplete={handleAcceptComplete}
       />
+      {bookingType === "non-emergency" && (
+        <AddServicesModal
+          open={isServicesModalOpen}
+          onClose={() => setIsServicesModalOpen(false)}
+          booking={acceptedBooking || booking}
+          bookingType="non-emergency"
+          onSuccess={handleInvoiceSuccess}
+          onRefresh={() => {
+            mutate(`/bookings/schedule/${booking.schedule_id}`);
+          }}
+        />
+      )}
 
       {/* Reject Booking Modal */}
       <Modal

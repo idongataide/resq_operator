@@ -15,13 +15,15 @@ interface AcceptBookingModalProps {
   booking: any;
   bookingType?: "all" | "emergency" | "non-emergency";
   onSuccess?: () => void;
+  onAcceptComplete?: (acceptedBooking: any) => void; 
 }
 
 const AcceptBookingModal = ({ 
   open, 
   onClose, 
   booking, 
-  onSuccess 
+  onSuccess,
+  onAcceptComplete,
 }: AcceptBookingModalProps) => {
   const [selectedAmbulance, setSelectedAmbulance] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -29,8 +31,6 @@ const AcceptBookingModal = ({
   // Determine booking type from the booking object itself
   const actualBookingType = booking?.schedule_id ? "non-emergency" : "emergency";
   
-  console.log("Booking Type", actualBookingType);
-
   
   // Fetch data based on booking type
   const { data: ambulancesLeads, isLoading: leadsLoading } = useAmbulanceLeadsSearch({
@@ -81,11 +81,26 @@ const AcceptBookingModal = ({
       }
       
       if (response?.status === 'ok') {
+
         toast.success('Booking accepted successfully!', { id: loadingToast });
-        mutate(`/bookings/${booking.booking_id}`);
+        
+        // Mutate based on booking type
+        if (isEmergency) {
+          mutate(`/bookings/${booking.booking_id}`);
+        } else {
+          mutate(`/bookings/schedule/${booking.schedule_id}`);
+        }
         mutate('/bookings');
         onSuccess?.();
+
         handleClose();
+        
+        // Call onAcceptComplete after modal closes so state updates properly
+        if (onAcceptComplete && !isEmergency) {
+          setTimeout(() => {
+            onAcceptComplete(booking);
+          }, 100);
+        }
       } else {
         const errorMsg = response?.response?.data?.msg || response?.message || 'Failed to accept booking';
         toast.error(errorMsg, { id: loadingToast });
