@@ -6,9 +6,8 @@ import Images from "../../../components/images";
 import OtpInput from 'react-otp-input';
 import { useOnboardingStore } from '@/global/store';
 import toast, { Toaster } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
-import { confirmLogin } from "@/api/authAPI";
-import { setNavData } from "../common/setNavData";
+import { Link, useNavigate } from 'react-router-dom';
+import { confirmOtp } from "@/api/authAPI";
 
 
 const EnterOtp = () => {
@@ -17,7 +16,7 @@ const EnterOtp = () => {
     const [loading, setLoading] = React.useState(false);
     const navigate = useNavigate();
     const { email } = useOnboardingStore();
-    const navPath = useOnboardingStore();
+    const {setNavPath, setOtpValue} = useOnboardingStore();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,25 +27,28 @@ const EnterOtp = () => {
         }
 
     
+        const otp_code = otp; // Assuming OTP is a string of digits
+
 
         setLoading(true);
         try {
-            const response = await confirmLogin({ email,  otp });
+            const response = await confirmOtp({ email,  otp_code });
 
 
             if (response?.error || response?.status === 'error' || response?.data?.status === 'error' || response?.response?.data?.status === 'error') {
                 const errorMsg = response?.data?.msg || response?.response?.data?.msg || response?.message || response?.msg || 'OTP verification failed.';
                 toast.error(errorMsg);
             } else if (response?.status === 'ok' || response?.data?.status === 'ok') { 
-                setNavData(navPath, email, response);                               
+                setOtpValue(otp_code);
                 toast.success('OTP verified successfully!');
+                setNavPath('enter-password');                               
                 localStorage.setItem(
                     "adminToken",
                     JSON.stringify({
                     access: response?.data?.token,
                     })
                 );
-                navigate('/home');
+                navigate('/login/enter-password');
             } else {
                 toast.error('OTP verification failed. Please try again.');
             }
@@ -68,7 +70,9 @@ const EnterOtp = () => {
             </Helmet> 
             <Toaster/>
             <div className="flex justify-center m-auto mb-6">
-                <img src={Images.logodark} alt="RESQ Logo" className="h-10" />
+                <Link to ="/login">
+                    <img src={Images.logodark} alt="RESQ Logo" className="h-10" />
+                </Link>
             </div>
 
             {/* Welcome Text */}

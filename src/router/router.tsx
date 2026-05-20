@@ -204,7 +204,10 @@ export const routes = createBrowserRouter([
     element: <OnboardingLayout />,
     children: [
       { index: true, element: <Login />},
+      { path: "forgot-password", element: <AuthPath /> },
       { path: "enter-otp", element: <AuthPath /> },
+      { path: "enter-password", element: <AuthPath /> },
+      { path: "success", element: <AuthPath /> },
     ],
   },
 

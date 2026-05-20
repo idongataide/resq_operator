@@ -26,7 +26,7 @@ const Success = () => {
             {/* Welcome Text */}
             <div className="text-center ">
                 <h2 className="text-2xl font-bold! text-[#475467] mb-1!">Success</h2>
-                <p className="text-md font-medium text-[#667085]">Your account has been created <br/> successfully</p>
+                <p className="text-md font-medium text-[#667085]">Your password has been updated <br/> successfully</p>
             </div>
            
             <Button

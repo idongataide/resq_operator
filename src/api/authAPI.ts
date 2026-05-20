@@ -17,10 +17,10 @@ export const login = async (data: iLogin) => {
   }
 };
 
-export const confirmLogin = async (data: any) => {
+export const confirmOtp  = async (data: any) => {
   try {
      return await requestClient
-     .post(`/auths/complet-login`, data)
+     .post(`/auths/confirm-otp`, data)
      .then((res) => {
         return res?.data;
       });
@@ -47,7 +47,7 @@ export const changePassword = async (data:any) => {
   }
 };
 
-export const forgetPassword = async (data: { otp_request_id: string; otp: string; new_password: string }) => {
+export const forgetPassword = async (data: { email: string; otp_code: string; new_password: string }) => {
   try {
     return await requestClient
       .post(`/auths/reset-password`, data)

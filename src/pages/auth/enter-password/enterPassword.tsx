@@ -4,13 +4,13 @@ import { Helmet } from "react-helmet-async";
 import { Form, Input, Button } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import Images from "@/components/images";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { forgetPassword } from "@/api/authAPI";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useOnboardingStore } from "@/global/store";
 
 const EnterPasspord = () => {
-    const { otpRequestId, otpValue, setOtpRequestId, setOtpValue, setNavPath } = useOnboardingStore();
+    const { email, otpValue, setOtpRequestId, setOtpValue, setNavPath } = useOnboardingStore();
     const navigate = useNavigate();
     const [loading, setLoading] = React.useState(false);
     const [form] = Form.useForm();
@@ -26,24 +26,25 @@ const EnterPasspord = () => {
             return;
         }
 
-        if (!otpRequestId || !otpValue) {
-            toast.error('Missing OTP information. Please restart the password reset process.');
-            return;
-        }
-
         setLoading(true);
         try {
+            if (!otpValue) {
+                toast.error('OTP is missing. Please try again.');
+                setLoading(false);
+                return;
+            }
+
             const payload = {
-                otp_request_id: otpRequestId,
-                otp: otpValue,
+                email: email,
+                otp_code: otpValue,
                 new_password: values.password,
             };
             
             const response = await forgetPassword(payload);
             console.log('Forget Password response:', response);
             
-            if (response?.error || response?.status === 'error') {
-                toast.error(response.message || response.msg || 'Failed to reset password.');
+            if (response?.error || response?.status === 'error' || response?.data?.status === 'error' || response?.response?.data?.status === 'error') {
+                toast.error(response.response.data.msg || response.msg || 'Failed to reset password.');
             } else {
                 toast.success('Password reset successfully!');
                 setOtpRequestId(null);
@@ -59,14 +60,15 @@ const EnterPasspord = () => {
     };
 
     return (
-        <div className="flex flex-col items-start w-full">
-            <Toaster />
+        <div className="flex flex-col items-start w-[300px]">
             <Helmet>
                 <meta charSet="utf-8" />
                 <title>RESQ: Set New Password</title>
             </Helmet>
             <div className="flex justify-center m-auto mb-6">
-                <img src={Images.logodark} alt="RESQ Logo" className="h-10" />
+                 <Link to ="/login">
+                    <img src={Images.logodark} alt="RESQ Logo" className="h-10" />
+                </Link>
             </div>
             <div className="mb-8 text-start ">
                 <h2 className="text-2xl font-bold! text-[#475467] mb-1!">Set New Password</h2>
@@ -90,7 +92,7 @@ const EnterPasspord = () => {
                 >
                     <Input.Password
                         placeholder="Enter your new password"
-                        className="h-[42px]"
+                        className="h-[42px] w-full"
                         iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                     />
                 </Form.Item>

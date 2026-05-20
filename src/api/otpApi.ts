@@ -4,7 +4,7 @@ import { axiosAPIInstance } from "./interceptor";
 export const sendOtp = async (data: any) => {
     try {
       return await axiosAPIInstance
-        .post(`/message/send/` , data)
+        .post(`/auths/send/` , data)
         .then((res) => {
           return res?.data;
         });
